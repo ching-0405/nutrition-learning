@@ -15,7 +15,7 @@
     );
     const isFileProtocol = (window.location.protocol === 'file:');
     const isStaticSite = isFileProtocol || /\.github\.io$/i.test(window.location.hostname);
-    let activeUnit = (urlParams.get('unit') || 'new_student_trial').toLowerCase().replace(/^unit_/, '');
+    let activeUnit = (urlParams.get('unit') || 'must').toLowerCase().replace(/^unit_/, '');
     const isTeacher = (
         urlParams.get('role') === 'teacher' ||
         urlParams.get('teacher') === '1' ||
