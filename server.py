@@ -684,10 +684,18 @@ class WebPlatformHandler(SimpleHTTPRequestHandler):
             return
 
         # -----------------
-        # 靜態檔案伺服
+        # 靜態檔案伺服與友善路徑對應 (支援手機與電腦簡寫網址)
         # -----------------
-        if url_path in ("", "/"):
+        clean_path = url_path.rstrip("/")
+        if clean_path in ("", "/index"):
             self.path = "/index.html"
+        elif clean_path in ("/admin", "/teacher"):
+            self.path = "/admin.html"
+        else:
+            rel_file = url_path.lstrip("/").replace("/", os.sep)
+            test_file = os.path.join(WEB_ROOT, rel_file)
+            if not os.path.exists(test_file) and os.path.exists(test_file + ".html"):
+                self.path = url_path + ".html"
         super().do_GET()
 
 

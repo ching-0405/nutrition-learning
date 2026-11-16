@@ -428,6 +428,9 @@
             return false;
         };
         window.__fyuAdvanceTrialDialog = function(event) {
+            if (!document.documentElement.classList.contains('trial-route') && !document.body.classList.contains('trial-dialog-step') && !document.body.classList.contains('unit-new_student_trial')) {
+                return false;
+            }
             if (event) {
                 event.preventDefault();
                 event.stopPropagation();
@@ -1375,8 +1378,8 @@
             <div class="rpg-bottom-panel" id="rpgBottomPanel">
                 <!-- 配方瓶選擇選單 (位於下方交互面板，不遮擋病房與病床) -->
                 <div id="formulaBottleChoices" class="formula-bottle-choices hidden" aria-label="管灌配方選擇"></div>
-                <!-- RPG 對話框 (點擊推進對話，無跳過按鈕) -->
-                <div class="rpg-dialog-box" id="dialogBox" onclick="if(typeof window.__fyuAdvanceTrialDialog==='function'){window.__fyuAdvanceTrialDialog(event);}" role="button" tabindex="0">
+                <!-- RPG 對話框 (大字體 ‧ 題目與引導對話) -->
+                <div class="rpg-dialog-box" id="dialogBox" role="region" aria-label="題目對話框">
                     <div class="dialog-box-border">
                         <div class="dialog-header-bar">
                             <div class="speaker-name-badge" id="speakerBadge">護理師 林語柔</div>

@@ -3629,8 +3629,8 @@
             return;
         }
 
-        // 新生勇者試煉 第1題 前導 RPG 對話流程 (或帶有 trial-dialog-step 樣式)
-        if ((isNewStudentTrialUnit(activeUnit) || document.body.classList.contains('unit-new_student_trial') || document.body.classList.contains('trial-dialog-step')) && (Number(currentStage) === 1 || !currentStage)) {
+        // 新生勇者試煉 第1題 前導 RPG 對話流程
+        if (isNewStudentTrialUnit(activeUnit) && (Number(currentStage) === 1 || !currentStage)) {
             // 保底登入流程可能先於主程式初始化完成，避免第一次點擊仍停留在步驟 0。
             if (newStudentTrialStep < 1) newStudentTrialStep = 1;
             if (newStudentTrialStep < 4) {
@@ -4345,6 +4345,7 @@
     window.showNewStudentTrialStep = showNewStudentTrialStep;
 
     function advanceNewStudentTrialStep() {
+        if (!isNewStudentTrialUnit(activeUnit)) return;
         try { sfxClick(); } catch(e) {}
         console.log('[TrialDialog] advanceNewStudentTrialStep called, current step:', newStudentTrialStep, 'isMedicalCityActive:', isMedicalCityActive);
         if (isMedicalCityActive) {
