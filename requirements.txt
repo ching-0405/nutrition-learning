@@ -1,0 +1,2 @@
+# 雲端部署相依套件 (Render / Railway / Heroku)
+# 本專案採用 Python 3 原生標準庫編寫，無需額外安裝第三方套件

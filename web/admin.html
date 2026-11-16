@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>輔英科技大學 - 營養教學平台 教師雲端控制台</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success: #16a34a;
+            --warning: #ca8a04;
+            --danger: #dc2626;
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Microsoft JhengHei", sans-serif;
+        }
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header-title h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .badge {
+            background: #3b82f6;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .header-links a {
+            color: #60a5fa;
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-left: 16px;
+            transition: color 0.2s;
+        }
+        .header-links a:hover {
+            color: #93c5fd;
+            text-decoration: underline;
+        }
+        main {
+            flex: 1;
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 24px;
+        }
+        @media (max-width: 1024px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+        }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+            margin-bottom: 24px;
+        }
+        .card h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #e2e8f0;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        select, input[type="text"], input[type="password"] {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        select:focus, input:focus {
+            border-color: #3b82f6;
+        }
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 14px;
+        }
+        .btn-full {
+            grid-column: span 2;
+        }
+        button {
+            cursor: pointer;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-success:hover { background: #15803d; }
+        .btn-warning { background: var(--warning); color: #fff; }
+        .btn-warning:hover { background: #a16207; }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-danger:hover { background: #b91c1c; }
+        .btn-secondary { background: #475569; color: #fff; }
+        .btn-secondary:hover { background: #334155; }
+
+        /* 即時監控面板 */
+        .status-hero {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-box {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .stat-box .num {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #38bdf8;
+            margin-top: 4px;
+        }
+        .stat-box .label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        
+        /* 投票統計柱狀圖 */
+        .vote-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .vote-bar-item {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+        }
+        .vote-bar-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .vote-bar-track {
+            height: 12px;
+            background: #1e293b;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .vote-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #06b6d4);
+            border-radius: 6px;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+        .vote-bar-item.correct .vote-bar-fill {
+            background: linear-gradient(90deg, #22c55e, #10b981);
+        }
+        
+        /* 學生即時名單 */
+        .student-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin-top: 12px;
+        }
+        .student-table th, .student-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        .student-table th {
+            color: var(--text-muted);
+            font-weight: 600;
+            background: #0f172a;
+        }
+        .student-table tr:hover {
+            background: #24344d;
+        }
+
+        /* 鎖定狀態標記 */
+        .pill {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .pill-locked { background: rgba(220, 38, 38, 0.2); color: #f87171; border: 1px solid #dc2626; }
+        .pill-active { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid #16a34a; }
+        .pill-revealed { background: rgba(234, 179, 8, 0.2); color: #facc15; border: 1px solid #ca8a04; }
+
+        /* 題目標題橫幅 */
+        .question-box {
+            background: #0f172a;
+            border-left: 4px solid #3b82f6;
+            padding: 14px 18px;
+            border-radius: 0 10px 10px 0;
+            margin-bottom: 20px;
+        }
+        .question-box h3 {
+            font-size: 1.05rem;
+            color: #e2e8f0;
+            margin-bottom: 4px;
+        }
+        .question-box p {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-title">
+        <span style="font-size: 1.6rem;">🍎</span>
+        <h1>輔英科技大學 ‧ 營養教學平台</h1>
+        <span class="badge">授課教師雲端控台</span>
+    </div>
+    <div class="header-links">
+        <a href="index.html" target="_blank">📲 打開學生前台 (模擬視窗)</a>
+    </div>
+</header>
+
+<main>
+    <!-- 左側控制器 -->
+    <div class="sidebar">
+        <!-- 課程與關卡選擇 -->
+        <div class="card">
+            <h2>🕹️ 關卡切換與控制</h2>
+            
+            <div class="form-group">
+                <label>選擇教學單元</label>
+                <select id="selectUnit">
+                    <option value="must">單元一：MUST 臨床營養評估實戰</option>
+                    <option value="support">單元二：營養支持 (NG/腸道營養)</option>
+                    <option value="curriculum_03">單元三：體重管理與代謝病態</option>
+                    <option value="dm">單元六：糖尿病醫學營養治療</option>
+                    <option value="curriculum_07">單元七：腎臟疾病營養治療</option>
+                    <option value="life">單元十五：人生好難題 (特別篇)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>當前第幾題 / 關卡</label>
+                <div style="display:flex; gap:8px;">
+                    <button class="btn-secondary" style="flex:1;" onclick="prevStage()">◀ 上一題</button>
+                    <select id="selectStage" style="flex:1.2;" onchange="changeStage()">
+                        <option value="1">第 1 題</option>
+                        <option value="2">第 2 題</option>
+                        <option value="3">第 3 題</option>
+                        <option value="4">第 4 題</option>
+                        <option value="5">第 5 題</option>
+                        <option value="6">第 6 題</option>
+                        <option value="7">第 7 題</option>
+                    </select>
+                    <button class="btn-secondary" style="flex:1;" onclick="nextStage()">下一題 ▶</button>
+                </div>
+            </div>
+
+            <div class="btn-grid">
+                <button class="btn-success btn-full" onclick="startGame()">🚀 遊戲開始 / 同步題目</button>
+                <button class="btn-warning" id="btnReveal" onclick="revealAnswer()">📢 公布正確答案</button>
+                <button class="btn-danger" id="btnLock" onclick="toggleLock()">🔒 鎖定作答</button>
+            </div>
+        </div>
+
+        <!-- 班級重置與設定 -->
+        <div class="card">
+            <h2>⚙️ 課堂管理</h2>
+            <div class="form-group">
+                <label>競賽模式</label>
+                <select id="selectMode">
+                    <option value="individual">個人競賽模式 (獨立排名)</option>
+                    <option value="team">隨機分組競賽模式 (小隊PK)</option>
+                </select>
+            </div>
+            <div class="btn-grid">
+                <button class="btn-secondary" onclick="resetScores()">🔄 清除本次答題分數</button>
+                <button class="btn-danger" onclick="clearStudents()">🚪 全班退出重置</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 右側即時監控面板 -->
+    <div class="content">
+        <!-- 狀態指標 -->
+        <div class="status-hero">
+            <div class="stat-box">
+                <div class="label">在線學員人數</div>
+                <div class="num" id="statStudentCount">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="label">本題已作答票數</div>
+                <div class="num" id="statVoteCount" style="color:#4ade80;">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="label">當前作答狀態</div>
+                <div style="margin-top:8px;" id="statLockBadge">
+                    <span class="pill pill-active">🟢 開放作答中</span>
+                </div>
+            </div>
+            <div class="stat-box">
+                <div class="label">最高得票選項</div>
+                <div class="num" id="statMostVoted" style="color:#facc15;">-</div>
+            </div>
+        </div>
+
+        <!-- 當前題目詳情 -->
+        <div class="card">
+            <h2>📖 當前考題即時資訊</h2>
+            <div class="question-box">
+                <h3 id="currentUnitDisplay">【單元一 營養照顧流程】第 1 題</h3>
+                <p id="currentModuleDescription">正在載入題庫內容與正確答案...</p>
+            </div>
+
+            <!-- 即時長條圖 -->
+            <div class="vote-bars" id="voteBarsContainer">
+                <div class="vote-bar-item">
+                    <div class="vote-bar-info">
+                        <span>選項 1 (A)</span>
+                        <span>0 票 (0%)</span>
+                    </div>
+                    <div class="vote-bar-track"><div class="vote-bar-fill" style="width: 0%;"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 學生在線與作答明細 -->
+        <div class="card">
+            <h2>👥 全班學員作答進度明細</h2>
+            <div style="overflow-x: auto; max-height: 420px; overflow-y: auto;">
+                <table class="student-table">
+                    <thead>
+                        <tr>
+                            <th>頭像</th>
+                            <th>學員暱稱</th>
+                            <th>小隊</th>
+                            <th>累積分數</th>
+                            <th>本題選擇</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentTableBody">
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 24px;">尚無學員加入課堂</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    let currentUnit = 'must';
+    let currentStage = 1;
+    let isLocked = false;
+    let isRevealed = false;
+    let pollInterval = null;
+
+    // 初始化
+    window.addEventListener('DOMContentLoaded', () => {
+        fetchStatus();
+        fetchModuleDetails();
+        pollInterval = setInterval(fetchStatus, 1500);
+        
+        document.getElementById('selectUnit').addEventListener('change', (e) => {
+            currentUnit = e.target.value;
+            currentStage = 1;
+            document.getElementById('selectStage').value = "1";
+            setStageOnServer();
+        });
+    });
+
+    function getAdminQuery() {
+        return `role=teacher`;
+    }
+
+    async function fetchStatus() {
+        try {
+            const res = await fetch(`/api/status?unit=${currentUnit}&stage=${currentStage}&${getAdminQuery()}`);
+            if (!res.ok) return;
+            const data = await res.json();
+            
+            document.getElementById('statStudentCount').textContent = data.studentCount || 0;
+            document.getElementById('statVoteCount').textContent = data.totalVotes || 0;
+            document.getElementById('statMostVoted').textContent = data.mostVoted ? `選項 ${data.mostVoted}` : '-';
+            
+            // 狀態徽章
+            isLocked = !!data.locked;
+            isRevealed = !!data.revealed;
+            const badgeEl = document.getElementById('statLockBadge');
+            if (isRevealed) {
+                badgeEl.innerHTML = '<span class="pill pill-revealed">📢 已公布正確答案</span>';
+            } else if (isLocked) {
+                badgeEl.innerHTML = '<span class="pill pill-locked">🔒 已鎖定作答</span>';
+            } else {
+                badgeEl.innerHTML = '<span class="pill pill-active">🟢 開放作答中</span>';
+            }
+
+            document.getElementById('btnLock').textContent = isLocked ? '🔓 解除鎖定' : '🔒 鎖定作答';
+
+            renderVoteBars(data.options || {}, data.percentages || {}, data.totalVotes || 0);
+            renderStudentList(data.students || []);
+
+            // 同步關卡選項數量
+            if (data.maxStages) {
+                updateStageDropdown(data.maxStages);
+            }
+        } catch (e) {
+            console.error("狀態同步錯誤", e);
+        }
+    }
+
+    async function fetchModuleDetails() {
+        try {
+            const res = await fetch(`/api/module_details?unit=${currentUnit}&stage=${currentStage}`);
+            const data = await res.json();
+            if (data.status === 'ok') {
+                document.getElementById('currentUnitDisplay').textContent = `${data.unitTitle} ‧ 第 ${currentStage} 題 (${data.title || ''})`;
+                let desc = data.description || '無詳細說明';
+                if (data.correctOption) {
+                    desc += `\n【伺服器正解判讀】：選項 ${data.correctOption}`;
+                }
+                document.getElementById('currentModuleDescription').innerText = desc;
+            }
+        } catch(e) {}
+    }
+
+    function updateStageDropdown(maxStages) {
+        const sel = document.getElementById('selectStage');
+        if (sel.options.length !== maxStages) {
+            sel.innerHTML = '';
+            for (let i = 1; i <= maxStages; i++) {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = `第 ${i} 題`;
+                if (i === currentStage) opt.selected = true;
+                sel.appendChild(opt);
+            }
+        }
+    }
+
+    function renderVoteBars(options, pcts, total) {
+        const container = document.getElementById('voteBarsContainer');
+        const keys = Object.keys(options).sort();
+        if (keys.length === 0) {
+            container.innerHTML = '<div style="color:var(--text-muted); font-size:0.9rem; text-align:center; padding:16px;">目前尚無人作答</div>';
+            return;
+        }
+        let html = '';
+        keys.forEach(k => {
+            const votes = options[k] || 0;
+            const pct = pcts[k] || 0;
+            html += `
+                <div class="vote-bar-item">
+                    <div class="vote-bar-info">
+                        <span>選項 ${k}</span>
+                        <span>${votes} 票 (${pct}%)</span>
+                    </div>
+                    <div class="vote-bar-track">
+                        <div class="vote-bar-fill" style="width: ${pct}%;"></div>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    function renderStudentList(students) {
+        const tbody = document.getElementById('studentTableBody');
+        if (!students || students.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 24px;">尚無學員加入課堂</td></tr>';
+            return;
+        }
+        let html = '';
+        students.forEach(s => {
+            const voteDisplay = s.vote ? `<strong style="color:#38bdf8;">選項 ${s.vote}</strong>` : '<span style="color:#64748b;">尚未作答</span>';
+            html += `
+                <tr>
+                    <td style="font-size:1.3rem;">${s.avatar || '🍎'}</td>
+                    <td><strong>${s.nickname}</strong></td>
+                    <td><span style="color:#94a3b8;">${s.teamName || '個人'}</span></td>
+                    <td><strong style="color:#4ade80;">${s.score} 分</strong></td>
+                    <td>${voteDisplay}</td>
+                </tr>
+            `;
+        });
+        tbody.innerHTML = html;
+    }
+
+    async function setStageOnServer() {
+        await fetch(`/api/admin/set_stage?unit=${currentUnit}&stage=${currentStage}&${getAdminQuery()}`);
+        fetchStatus();
+        fetchModuleDetails();
+    }
+
+    async function startGame() {
+        const mode = document.getElementById('selectMode').value;
+        await fetch(`/api/admin/start_game?unit=${currentUnit}&stage=${currentStage}&mode=${mode}&${getAdminQuery()}`);
+        alert('🚀 課堂競賽已正式開始！學生端畫面已即時同步進入題目！');
+        fetchStatus();
+    }
+
+    async function toggleLock() {
+        const endpoint = isLocked ? '/api/admin/unlock' : '/api/admin/lock';
+        await fetch(`${endpoint}?stage=${currentStage}&${getAdminQuery()}`);
+        fetchStatus();
+    }
+
+    async function revealAnswer() {
+        await fetch(`/api/admin/reveal?stage=${currentStage}&${getAdminQuery()}`);
+        fetchStatus();
+    }
+
+    async function prevStage() {
+        if (currentStage > 1) {
+            currentStage--;
+            document.getElementById('selectStage').value = currentStage;
+            setStageOnServer();
+        }
+    }
+
+    async function nextStage() {
+        currentStage++;
+        document.getElementById('selectStage').value = currentStage;
+        setStageOnServer();
+    }
+
+    function changeStage() {
+        currentStage = parseInt(document.getElementById('selectStage').value, 10);
+        setStageOnServer();
+    }
+
+    async function resetScores() {
+        if (confirm('確定要清除所有學生的累計得分嗎？（學員名單將保留）')) {
+            await fetch(`/api/admin/reset_votes?clear_students=false&${getAdminQuery()}`);
+            fetchStatus();
+        }
+    }
+
+    async function clearStudents() {
+        if (confirm('確定要清空整班學員名單並重置課堂嗎？')) {
+            await fetch(`/api/admin/clear_students?${getAdminQuery()}`);
+            fetchStatus();
+        }
+    }
+</script>
+
+</body>
+</html>

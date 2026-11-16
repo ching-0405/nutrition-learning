@@ -1,0 +1,1875 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>營養教學平台 - 營養勇者傳說</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico?v=20261019-app-icon">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico?v=20261019-app-icon">
+    <link rel="stylesheet" href="css/style.css?v=forest-dialog-wrap-v2">
+    <link rel="stylesheet" href="css/port-stage-dialogue.css?v=20261028-port-hide-azhe-v1">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <script>
+        (function() {
+            document.documentElement.classList.add('app-initializing');
+            var p = new URLSearchParams(window.location.search);
+            var unit = (p.get('unit') || 'new_student_trial').toLowerCase().replace(/^unit_/, '');
+            var isTrial = (unit === 'new_student_trial' || unit === 'f47185' || unit === 'trial' || unit === 'health_continent');
+            var isT = (p.get('role') === 'teacher' || p.get('teacher') === '1' || (!isTrial && (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && p.get('role') !== 'student'));
+            if (isT) {
+                document.documentElement.className += ' is-teacher';
+            }
+            var isInApp = Boolean(p.get('in_app') === '1' || p.get('previewRevision') || (window.chrome && window.chrome.webview));
+            if (isInApp) {
+                document.documentElement.className += ' is-in-app';
+            }
+            var unit = (p.get('unit') || 'new_student_trial').toLowerCase().replace(/^unit_/, '');
+            if (unit === 'new_student_trial' || unit === 'f47185' || unit === 'trial') {
+                document.documentElement.className += ' trial-route';
+            }
+        })();
+    </script>
+    <style>
+        /* Step 0 首頁防禦性樣式：確保背景滿版顯示、徹底隱藏人物與對話框 */
+        body.trial-step-0 #stageBackdrop,
+        body.trial-step-0 .stage-backdrop.new-student-trial-theme,
+        .stage-backdrop.new-student-trial-theme.step-0-fullscreen {
+            background-image: url('assets/new_student_trial_login_bg.jpg?v=20261025-login-hd-v1') !important;
+            background-size: cover !important;
+            background-position: center top !important;
+            background-repeat: no-repeat !important;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        body.trial-step-0 #characterStage,
+        body.trial-step-0 .character-stage,
+        body.trial-step-0 #charNurse,
+        body.trial-step-0 #charNurse.speaking,
+        body.trial-step-0 #charNurse.inactive,
+        body.trial-step-0 #charNurse .char-sprite,
+        body.trial-step-0 #charStudent,
+        body.trial-step-0 #charStudent.speaking,
+        body.trial-step-0 #charStudent.inactive,
+        body.trial-step-0 #charStudent .char-sprite,
+        body.trial-step-0 #sportsAzheCharacter,
+        body.trial-step-0 #rpgBottomPanel,
+        body.trial-step-0 .rpg-bottom-panel,
+        body.trial-step-0 #dialogBox,
+        body.trial-step-0 .rpg-dialog-box,
+        body.trial-step-0 #dialogContent,
+        body.trial-step-0 #patientBanner,
+        body.trial-step-0 #stageIndicatorBar,
+        body.trial-step-0 #rpgChoicesArea,
+        body.trial-step-0 #optionsGrid {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+        
+        html.app-initializing #rpgMainStage {
+            visibility: hidden !important;
+        }
+        html,
+        body {
+            touch-action: manipulation;
+            -webkit-text-size-adjust: 100%;
+        }
+        html.trial-route,
+        body.trial-step-0,
+        html.trial-route body {
+            overflow: hidden !important;
+            height: 100% !important;
+            height: 100svh !important;
+            max-height: 100svh !important;
+            overscroll-behavior: none !important;
+        }
+        html.trial-route #rpg-app,
+        body.trial-step-0 #rpg-app {
+            overflow: hidden !important;
+            height: 100% !important;
+            height: 100svh !important;
+            max-height: 100svh !important;
+        }
+        html {
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        input,
+        textarea {
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        .is-teacher #sceneLogin,
+        body.is-teacher #sceneLogin {
+            display: none !important;
+        }
+        .is-in-app .teacher-control-bar,
+        .is-in-app #teacherControlBar,
+        .is-in-app .teacher-toggle-btn,
+        .is-in-app #teacherToggleBtn {
+            display: none !important;
+        }
+        /* 避免重新整理時先閃出預設 MUST 題目的護理師與投票面板。 */
+        html.trial-route body.trial-step-0 #charNurse,
+        html.trial-route body.trial-step-0 #charStudent,
+        html.trial-route body.trial-step-0 #characterStage,
+        html.trial-route body.trial-step-0 #rpgBottomPanel,
+        html.trial-route body.trial-step-0 #patientBanner,
+        html.trial-route body.trial-step-0 #stageIndicatorBar,
+        html.trial-route body.trial-step-0 #dialogBox,
+        html.trial-route body.trial-step-0 #rpgChoicesArea,
+        html.trial-route body.trial-step-0 #optionsGrid {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+        html.trial-route #rpgMainStage,
+        body.trial-step-0 #rpgMainStage {
+            display: flex !important;
+            flex-direction: column !important;
+            width: 100% !important;
+            height: 100vh !important;
+            height: 100svh !important;
+            min-height: 100svh !important;
+            max-height: 100svh !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            overflow: hidden !important;
+        }
+        html.trial-route #stageBackdrop,
+        body.trial-step-0 #stageBackdrop,
+        body.trial-step-0 .stage-backdrop.new-student-trial-theme {
+            width: 100% !important;
+            max-width: 100% !important;
+            height: 100% !important;
+            min-height: 100% !important;
+            max-height: 100% !important;
+            flex: 1 1 100% !important;
+            aspect-ratio: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background-image: url('assets/new_student_trial_login_bg.jpg?v=20261023-login-bg-v3') !important;
+            background-size: cover !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+        }
+        @media (max-width: 600px) {
+            html.trial-route #stageBackdrop,
+            body.trial-step-0 #stageBackdrop,
+            body.trial-step-0 .stage-backdrop.new-student-trial-theme {
+                background-image: url('assets/new_student_trial_login_bg_mobile.jpg?v=20261025-mobile-v7') !important;
+                background-size: cover !important;
+                background-position: center center !important;
+            }
+        }
+        html.trial-route #btnJoinLobby {
+            position: relative;
+            z-index: 100;
+            pointer-events: auto !important;
+        }
+        /* 新生試煉首屏在 JavaScript 初始化前也必須固定顯示開始遊戲畫面。 */
+        html.trial-route #sceneLogin,
+        body.trial-step-0 #sceneLogin {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+        html.trial-route #trialBgStartArea {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            position: absolute !important;
+            top: auto !important;
+            bottom: max(16%, 110px) !important;
+            bottom: max(16%, calc(110px + env(safe-area-inset-bottom, 0px))) !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            width: auto !important;
+            margin: 0 !important;
+            z-index: 200 !important;
+        }
+        /* 登入畫面字體與黃框完美貼合配置 (一頁完整顯示不超出黃色外框) */
+        .login-scene {
+            padding: 10px 12px 24px 12px !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            overflow-y: auto !important;
+        }
+        .login-card {
+            max-width: 440px !important;
+            width: 100% !important;
+            padding: 14px 16px !important;
+            gap: 8px !important;
+            margin: 0 auto !important;
+            box-sizing: border-box !important;
+        }
+        .login-card .fyu-banner-logo {
+            max-width: 86% !important;
+            height: auto !important;
+            margin-bottom: 2px !important;
+        }
+        .login-card h2 {
+            font-size: 20px !important;
+            font-weight: 900 !important;
+            letter-spacing: 0.5px !important;
+            margin: 2px 0 4px 0 !important;
+            color: #fef08a !important;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6) !important;
+        }
+        .login-desc {
+            font-size: 13.5px !important;
+            font-weight: 500 !important;
+            color: #cbd5e1 !important;
+            line-height: 1.4 !important;
+            margin-bottom: 2px !important;
+        }
+        .login-input-group {
+            margin-bottom: 4px !important;
+        }
+        .login-input-group label,
+        .gender-select-group label {
+            font-size: 14px !important;
+            font-weight: 800 !important;
+            color: #fef08a !important;
+            margin-bottom: 4px !important;
+        }
+        .login-input-group input {
+            font-size: 14.5px !important;
+            padding: 9px 12px !important;
+            font-weight: 500 !important;
+            border-radius: 8px !important;
+        }
+        .login-input-group input::placeholder {
+            font-size: 13px !important;
+            color: #64748b !important;
+        }
+        .gender-select-group {
+            margin-bottom: 6px !important;
+            width: 100% !important;
+        }
+        .avatar-card-gender-options {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 10px !important;
+            width: 100% !important;
+        }
+        .gender-card-opt {
+            padding: 6px 8px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border-radius: 10px !important;
+        }
+        .gender-avatar-frame {
+            height: 108px !important;
+            max-height: 115px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            overflow: hidden !important;
+            width: 100% !important;
+        }
+        .gender-avatar-img {
+            max-height: 104px !important;
+            width: auto !important;
+            object-fit: contain !important;
+        }
+        .gender-card-opt .gender-label {
+            font-size: 16px !important;
+            font-weight: 900 !important;
+            letter-spacing: 1px !important;
+            margin-top: 4px !important;
+        }
+        .btn-join-game {
+            font-size: 16.5px !important;
+            font-weight: 900 !important;
+            padding: 11px 16px !important;
+            border-radius: 10px !important;
+            letter-spacing: 0.5px !important;
+            margin-top: 2px !important;
+        }
+        @media (max-height: 720px) {
+            .login-card {
+                padding: 10px 14px !important;
+                gap: 6px !important;
+            }
+            .gender-avatar-frame {
+                height: 90px !important;
+            }
+            .gender-avatar-img {
+                max-height: 88px !important;
+            }
+        }
+
+        /* 團膳之港：發言者保持彩色立體感，未發言者縮小並顯示灰階。 */
+        body.port-stage-active #charNurse.speaking,
+        body.port-stage-active #charStudent.speaking,
+        .stage-backdrop.port-stage-theme ~ #characterStage #charNurse.speaking,
+        .stage-backdrop.port-stage-theme ~ #characterStage #charStudent.speaking {
+            opacity: 1 !important;
+            filter: drop-shadow(0 0 16px rgba(254, 240, 138, 0.95)) drop-shadow(0 8px 24px rgba(0, 0, 0, 0.85)) !important;
+            transform: scale(1.08) translateY(-4px) !important;
+            z-index: 95 !important;
+        }
+        body.port-stage-active #charNurse.speaking .char-sprite,
+        body.port-stage-active #charStudent.speaking .char-sprite {
+            opacity: 1 !important;
+            filter: drop-shadow(0 0 14px rgba(254, 240, 138, 0.85)) !important;
+        }
+        body.port-stage-active #charNurse.inactive,
+        body.port-stage-active #charStudent.inactive,
+        .stage-backdrop.port-stage-theme ~ #characterStage #charNurse.inactive,
+        .stage-backdrop.port-stage-theme ~ #characterStage #charStudent.inactive {
+            opacity: 0.68 !important;
+            filter: grayscale(100%) brightness(0.78) !important;
+            transform: scale(0.82) translateY(4px) !important;
+            z-index: 85 !important;
+        }
+        body.port-stage-active #charNurse.inactive .char-sprite,
+        body.port-stage-active #charStudent.inactive .char-sprite {
+            opacity: 1 !important;
+            filter: none !important;
+        }
+
+        /* 進入各關卡時，確保健康大陸大地圖覆蓋層絕對隱藏 */
+        body.port-stage-active #healthContinentMap,
+        body.sports-stage-active #healthContinentMap,
+        body.medical-city-active #healthContinentMap,
+        body.forest-stage-active #healthContinentMap,
+        body.research-stage-active #healthContinentMap,
+        body.community-stage-active #healthContinentMap,
+        #healthContinentMap.hidden {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        body.trial-dialog-step #rpgBottomPanel,
+        body.trial-dialog-step #dialogBox,
+        body.trial-dialog-step .dialog-box-border,
+        body.trial-dialog-step .dialog-text-body,
+        body.trial-dialog-step .dialog-indicator {
+            pointer-events: auto !important;
+            cursor: pointer !important;
+        }
+    </style>
+    <script>
+        document.addEventListener('dblclick', function(event) {
+            event.preventDefault();
+        }, { passive: false });
+    </script>
+
+    <script>
+        window.openTrialLoginFromStart = function() {
+            var login = document.getElementById('sceneLogin');
+            var lobby = document.getElementById('sceneLobby');
+            var main = document.getElementById('rpgMainStage');
+            document.documentElement.classList.remove('trial-route');
+            document.body.classList.remove('trial-step-0');
+            if (main) main.classList.add('hidden');
+            if (lobby) lobby.classList.add('hidden');
+            if (login) login.classList.remove('hidden');
+            var bgm = document.getElementById('rpgBgmAudio');
+            if (bgm) {
+                try { bgm.play(); } catch(e) {}
+            }
+        };
+
+        window.__fyuStartTrialLogin = function(event) {
+            if (event) {
+                event.preventDefault();
+            }
+            var login = document.getElementById('sceneLogin');
+            var lobby = document.getElementById('sceneLobby');
+            var main = document.getElementById('rpgMainStage');
+            var inputNickname = document.getElementById('inputNickname');
+            var myNick = (inputNickname && inputNickname.value ? inputNickname.value.trim() : '') || '營養小達人';
+
+            document.documentElement.classList.remove('trial-route');
+            document.body.classList.remove('trial-step-0');
+            document.body.classList.add('trial-dialog-step', 'unit-new_student_trial');
+
+            if (login) login.classList.add('hidden');
+            if (lobby) lobby.classList.add('hidden');
+            if (main) main.classList.remove('hidden');
+
+            try {
+                localStorage.setItem('FYU_STUDENT_NICKNAME', myNick);
+            } catch(e) {}
+
+            if (typeof window.showNewStudentTrialStep === 'function') {
+                window.showNewStudentTrialStep(1);
+            } else if (typeof window.__fyuStartTrialDialog === 'function') {
+                window.__fyuStartTrialDialog();
+            }
+            return false;
+        };
+        window.__fyuAdvanceTrialDialog = function(event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            var now = Date.now();
+            if (window.__fyuTrialLastAdvanceAt && now - window.__fyuTrialLastAdvanceAt < 450) {
+                return false;
+            }
+            window.__fyuTrialLastAdvanceAt = now;
+            if (typeof window.advanceNewStudentTrialStep === 'function') {
+                window.advanceNewStudentTrialStep();
+            } else if (typeof window.__fyuAdvanceTrialDialogImpl === 'function') {
+                window.__fyuAdvanceTrialDialogImpl();
+            }
+            return false;
+        };
+    </script>
+
+    <script>
+        // 手機與全平台極限高相容性 BGM 自動播放管理器 (Audible + Muted fallback + Instant Gesture Unmute)
+        (function() {
+            var bgmStarted = false;
+
+            function updateBgmBtnUI(isPlaying) {
+                var btn = document.getElementById('bgmToggleBtn');
+                if (!btn) return;
+                if (isPlaying) {
+                    btn.classList.add('active');
+                    btn.textContent = '🎵 BGM [開]';
+                } else {
+                    btn.classList.remove('active');
+                    btn.textContent = '🎵 BGM [點擊播放]';
+                }
+            }
+
+            function tryStartBgm() {
+                var bgm = document.getElementById('rpgBgmAudio');
+                if (!bgm) return;
+
+                bgm.autoplay = true;
+                bgm.loop = true;
+                bgm.volume = 0.5;
+
+                // 優先嘗試直接有聲播放 (PC、桌面或已取得授權之行動裝置)
+                bgm.muted = false;
+                var playPromise = bgm.play();
+                if (playPromise && typeof playPromise.then === 'function') {
+                    playPromise.then(function() {
+                        bgmStarted = true;
+                        updateBgmBtnUI(true);
+                        window.dispatchEvent(new Event('fyu-bgm-started'));
+                    }).catch(function(err) {
+                        // 若被 iOS Safari 或 Chrome 自動播放政策阻擋 (NotAllowedError)，
+                        // 立即以靜音 (muted=true) 啟動解碼與播放串流，繞過瀏覽器限制
+                        bgm.muted = true;
+                        var mutedPromise = bgm.play();
+                        if (mutedPromise && typeof mutedPromise.then === 'function') {
+                            mutedPromise.then(function() {
+                                // 成功以靜音播放中，等待使用者第一次碰觸螢幕時無縫解除靜音
+                                updateBgmBtnUI(false);
+                            }).catch(function() {});
+                        }
+                    });
+                }
+            }
+
+            // 使用者在手機螢幕上的任何第一次碰觸或點擊，立即解除靜音並恢復正常音量有聲播放
+            var unlockEvents = ['touchstart', 'touchend', 'pointerdown', 'pointerup', 'click', 'keydown'];
+            function unlockBgmAudio(event) {
+                var bgm = document.getElementById('rpgBgmAudio');
+                if (!bgm) return;
+
+                // 若點擊的是右上角手動切換開關，由該開關自身處理，此處不干擾
+                if (event && event.target && event.target.closest && event.target.closest('#bgmToggleBtn')) {
+                    return;
+                }
+
+                bgm.muted = false;
+                bgm.volume = 0.5;
+                var p = bgm.play();
+                if (p && typeof p.then === 'function') {
+                    p.then(function() {
+                        bgmStarted = true;
+                        updateBgmBtnUI(true);
+                        window.dispatchEvent(new Event('fyu-bgm-started'));
+                        // 成功解鎖後移除所有一次性全域監聽器
+                        unlockEvents.forEach(function(ev) {
+                            window.removeEventListener(ev, unlockBgmAudio, true);
+                            document.removeEventListener(ev, unlockBgmAudio, true);
+                        });
+                    }).catch(function() {});
+                }
+            }
+
+            unlockEvents.forEach(function(ev) {
+                window.addEventListener(ev, unlockBgmAudio, true);
+                document.addEventListener(ev, unlockBgmAudio, true);
+            });
+
+            // 頁面生命週期各階段自動觸發播放
+            document.addEventListener('DOMContentLoaded', tryStartBgm);
+            window.addEventListener('load', tryStartBgm);
+            window.addEventListener('pageshow', tryStartBgm);
+            tryStartBgm();
+        })();
+    </script>
+</head>
+<body class="unit-new_student_trial trial-step-0">
+    <audio id="rpgBgmAudio" src="assets/new_student_trial_bgm.mp3" loop autoplay playsinline preload="auto"></audio>
+    <audio id="grandmaVoiceAudio" src="assets/grandma_taigi_voice.mp3?v=2" preload="none"></audio>
+    <audio id="npcQuestionVoiceAudio" preload="none"></audio>
+
+    <div id="rpg-app">
+        <!-- 頂部醫療監控與狀態儀表列 -->
+        <header class="top-nav-bar">
+            <div class="nav-left">
+                <div class="fyu-tag">
+                    <img src="assets/fyu_school_logo.png?v=20261025-logo-v2" alt="輔英科技大學校徽" class="fyu-school-logo" id="fyuHeaderLogo" width="28" height="28" style="width: 28px !important; height: 28px !important; max-width: 28px !important; max-height: 28px !important; object-fit: contain; border-radius: 50%; display: inline-block !important; flex-shrink: 0 !important; vertical-align: middle !important;">
+                    <span class="cross-icon" id="fyuHeaderIcon" style="display:none !important;">✚</span>
+                    <div>
+                        <div class="fyu-title" id="fyuHeaderTitle">輔英科技大學</div>
+                        <div class="fyu-sub" id="fyuHeaderSub">保健營養系 ‧ 營養教學平台</div>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-center">
+                <div class="rpg-status-pill">
+                    <span class="quest-tag" id="currentModeTag">🎮 登入大廳</span>
+                    <span class="exp-text" id="liveVotesSummary">👥 等待開始</span>
+                </div>
+            </div>
+            <div class="nav-right">
+
+                <button id="bgmToggleBtn" class="rpg-btn-icon bgm-btn" title="背景音樂開關">🎵 BGM</button>
+                <button id="soundToggleBtn" class="rpg-btn-icon" title="音效開關">🔊</button>
+                <button id="btnZoomInFont" class="rpg-btn-icon" title="放大字體 (A⁺)" style="font-weight:bold;">A⁺</button>
+                <button id="btnZoomOutFont" class="rpg-btn-icon" title="縮小字體 (A⁻)" style="font-weight:bold;">A⁻</button>
+                
+                <div class="timer-badge" id="timerBadge">
+                    <span class="t-lbl">黃金 48H</span>
+                    <span class="t-val" id="timerVal">03:00</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- ============================================== -->
+        <!-- 場景 0：學生登入與暱稱設定場景 (Login Screen) -->
+        <!-- ============================================== -->
+        <section id="sceneLogin" class="rpg-scene login-scene hidden">
+            <div class="login-card">
+                <img src="assets/fyu_nutrition_header_logo.png?v=20261023-logo-v1" alt="輔英科技大學 保健營養系暨碩士班" class="game-logo-badge fyu-banner-logo">
+                <h2>解鎖專業營養師勳章</h2>
+                <p class="login-desc">歡迎來到健康大陸！請輸入勇者暱稱，準備展開營養試煉：</p>
+
+                <div class="login-input-group">
+                    <label for="inputNickname">👤 遊戲暱稱：</label>
+                    <input type="text" id="inputNickname" placeholder="請輸入暱稱 (例如: 健管小達人 / 王小明)" maxlength="12">
+                </div>
+
+                <div class="gender-select-group">
+                    <label>👤 選擇性別：</label>
+                    <div class="gender-options avatar-card-gender-options" id="genderOptions">
+                        <button type="button" class="gender-opt gender-card-opt" data-gender="male">
+                            <div class="gender-avatar-frame">
+                                <img src="assets/hero_player_male_intern.png?v=20261021-intern-m" alt="營養實習生 (男)" class="gender-avatar-img">
+                            </div>
+                            <span class="gender-label">男</span>
+                        </button>
+                        <button type="button" class="gender-opt gender-card-opt selected" data-gender="female">
+                            <div class="gender-avatar-frame">
+                                <img src="assets/hero_player_female_hd.png?v=20261017-intern-clean-v3" alt="營養實習生 (女)" class="gender-avatar-img">
+                            </div>
+                            <span class="gender-label">女</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 保留 DOM 結構以維持既有邏輯運作相容 -->
+                <div class="avatar-select-group hidden" style="display: none !important;">
+                    <div class="avatar-options" id="avatarOptions">
+                        <button type="button" class="avatar-opt selected" data-av="預設">預設 蘋果</button>
+                    </div>
+                    <input type="file" id="avatarPhotoInput" class="avatar-photo-input" accept="image/*">
+                    <div id="avatarPhotoPreview" class="avatar-photo-preview hidden" aria-live="polite"></div>
+                </div>
+
+                <button id="btnJoinLobby" type="button" class="btn-join-game" onclick="return window.__fyuStartTrialLogin(event);" disabled>⚔️ 開始試煉 ‧ 踏上冒險 ➜</button>
+            </div>
+        </section>
+
+
+        <!-- ============================================== -->
+        <!-- 場景 1：等候大廳 (Waiting Room Lobby) -->
+        <!-- ============================================== -->
+        <section id="sceneLobby" class="rpg-scene lobby-scene hidden">
+            <div class="lobby-card">
+                <div class="lobby-header-badge" id="lobbyHeaderBadge">⏳ 臨床挑戰等候室</div>
+                <h3 id="lobbyStudentGreeting">嗨，營養小學員！</h3>
+                <div id="lobbyUnitTitleSub" class="lobby-unit-sub">【單元一】營養照顧流程</div>
+                <div class="lobby-status-pill" id="lobbyTeamPill">
+                    <span>競賽模式：</span><strong id="lobbyModeText">⚔️ 隨機分組對抗 (開始時依人數平均分組)</strong>
+                </div>
+
+                <div class="lobby-url-card" id="lobbyUrlCard">
+                    <div class="url-card-label">🔗 專屬課程連線網址 (可直接複製傳送給學生加入)：</div>
+                    <div class="url-card-row">
+                        <input type="text" id="lobbyUrlInput" readonly class="lobby-url-input" value="http://127.0.0.1:5050/">
+                        <button type="button" id="btnCopyLobbyUrl" class="btn-copy-url">📋 複製課程網址</button>
+                    </div>
+                </div>
+
+                <div class="lobby-waiting-anim">
+                    <div class="spinner-ring"></div>
+                    <div class="lobby-waiting-msg-wrap">
+                        <div id="lobbyWaitingUnitName" class="waiting-unit-name">【單元一】營養照顧流程</div>
+                        <div id="lobbyWaitingText" class="waiting-action-text">連線成功！正在等待授課教師點擊「開始遊戲」...</div>
+                    </div>
+                </div>
+
+                <div class="lobby-students-box">
+                    <div class="box-title">
+                        <span>👥 目前已加入學員 (<span id="lobbyStudentCount">1</span> 人)：</span>
+                    </div>
+                    <div class="students-bubbles-list" id="studentsBubblesList">
+                        <!-- 動態氣泡 -->
+                    </div>
+                </div>
+
+                <button id="lobbyTeacherStartBtn" class="btn-lobby-teacher-start hidden">🚀 全員到齊，開始遊戲！</button>
+
+                <div class="lobby-footer-note" id="lobbyFooterNote">
+                    老師在講台點擊「🚀 全員到齊，開始遊戲！」後，全班將同步進入挑戰！
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- 場景 2：主場景 (Grandma Bed 302 Visual Novel RPG) -->
+        <!-- ============================================== -->
+        <main class="rpg-main-stage" id="rpgMainStage">
+            <div id="forestStage1FailVideoOverlay" class="medical-city-video-overlay forest-stage1-fail-video-overlay hidden" role="dialog" aria-modal="true" aria-label="蔬食之森第一關失敗影片">
+                <video id="forestStage1FailVideo" controls playsinline webkit-playsinline x5-playsinline preload="auto"></video>
+                <div id="forestStage1FailStatus" class="medical-city-video-status" role="status" aria-live="polite"></div>
+                <div id="forestStage1FailPanel" class="forest-stage1-fail-panel hidden">
+                    <div class="forest-stage1-fail-title">挑戰失敗</div>
+                    <div class="forest-stage1-fail-text">請重新通關</div>
+                    <button id="forestStage1RestartButton" type="button">重新通關</button>
+                </div>
+            </div>
+            <div id="sportsIntroVideoOverlay" class="medical-city-video-overlay sports-intro-video-overlay hidden" role="dialog" aria-modal="true" aria-label="活力運動場關卡影片">
+                <div class="medical-city-video-controls-top">
+                    <button id="sportsIntroVideoClose" class="medical-city-video-close" type="button">🗺️ 返回活力運動場</button>
+                    <button id="sportsIntroVideoSkip" class="medical-city-video-skip" type="button">關閉影片 ‧ 返回對話 ➔</button>
+                </div>
+                <video id="sportsIntroVideo" src="assets/sports_nutrition_intro.mp4" controls playsinline webkit-playsinline x5-playsinline preload="none"></video>
+                <div id="sportsIntroVideoStatus" class="medical-city-video-status" role="status" aria-live="polite"></div>
+                <button id="sportsIntroVideoRetry" class="medical-city-video-retry hidden" type="button">點擊播放影片</button>
+            </div>
+            <div id="medicalCityIntroVideoOverlay" class="medical-city-video-overlay hidden" role="dialog" aria-modal="true" aria-label="醫療之城關卡影片">
+                <div class="medical-city-video-controls-top">
+                    <button id="medicalCityIntroVideoClose" class="medical-city-video-close" type="button">🗺️ 返回健康大陸</button>
+                    <button id="medicalCityIntroVideoSkip" class="medical-city-video-skip" type="button">跳過影片 ‧ 挑選食物 ➔</button>
+                </div>
+                <video id="medicalCityIntroVideo" src="assets/medical_city_intro.mp4" controls playsinline webkit-playsinline x5-playsinline preload="none"></video>
+                <div id="medicalCityIntroVideoStatus" class="medical-city-video-status" role="status" aria-live="polite"></div>
+                <button id="medicalCityIntroVideoRetry" class="medical-city-video-retry hidden" type="button">點擊播放影片</button>
+            </div>
+            <div id="portDialogueVideoOverlay" class="medical-city-video-overlay hidden" role="dialog" aria-modal="true" aria-label="團膳之港預算任務影片">
+                <div class="medical-city-video-controls-top">
+                    <button id="portDialogueVideoClose" class="medical-city-video-close" type="button">返回團膳之港</button>
+                    <button id="portDialogueVideoSkip" class="medical-city-video-skip" type="button">略過影片 ‧ 返回任務 ➔</button>
+                </div>
+                <video id="portDialogueVideo" src="assets/port_budget_dialogue_video.mp4" controls playsinline webkit-playsinline x5-playsinline preload="none"></video>
+                <div id="portDialogueVideoStatus" class="medical-city-video-status" role="status" aria-live="polite"></div>
+                <button id="portDialogueVideoRetry" class="medical-city-video-retry hidden" type="button">點擊播放影片</button>
+            </div>
+            <div id="supportStage11VideoOverlay" class="support-stage11-video-overlay hidden" aria-label="案例影片">
+                <video id="supportStage11Video" src="assets/rpg_bg_support_en_pn.mp4" playsinline webkit-playsinline x5-playsinline preload="none"></video>
+                <div id="supportStage11UnmuteBtn" class="support-stage11-unmute-btn hidden">
+                    <span>🔊 點擊開啟影片聲音</span>
+                </div>
+            </div>
+            <div id="dmStage8VideoOverlay" class="support-stage11-video-overlay dm-stage8-video-overlay hidden" aria-label="答對動畫">
+                <video id="dmStage8Video" src="assets/dm_stage8_correct.mp4" muted playsinline webkit-playsinline x5-playsinline preload="none"></video>
+            </div>
+            <div id="unit3Stage3VideoOverlay" class="unit3-stage3-video-overlay hidden" aria-label="單元三第3題選項影片">
+                <video id="unit3Stage3OptionVideo" muted playsinline webkit-playsinline x5-playsinline preload="none"></video>
+                <div class="unit3-stage3-video-caption">
+                    <strong id="unit3Stage3VideoLabel">選項 A</strong>
+                    <span id="unit3Stage3VideoNarration" aria-live="polite"></span>
+                </div>
+                <div id="unit3Stage3VideoStatus" class="unit3-stage3-video-status" role="status"></div>
+                <button id="unit3Stage3VideoRetry" class="unit3-stage3-video-retry hidden" type="button">點擊重新播放影片</button>
+            </div>
+            <div id="unit3RevealVideoOverlay" class="unit3-reveal-video-overlay hidden" role="dialog" aria-label="單元三答案揭曉影片">
+                <video id="unit3RevealVideo" playsinline webkit-playsinline x5-playsinline preload="none"></video>
+                <div id="unit3RevealVideoStatus" class="unit3-reveal-video-status" role="status"></div>
+                <button id="unit3RevealVideoRetry" class="unit3-reveal-video-button hidden" type="button">點擊播放影片（含聲音）</button>
+                <button id="unit3RevealVideoSkip" class="unit3-reveal-video-skip hidden" type="button">略過影片並公布答案</button>
+            </div>
+            <!-- 頂部個案病歷快捷資訊列 (修正表達、加大字體) -->
+            <div class="patient-quick-banner hidden" id="patientBanner"></div>
+
+            <div class="stage-backdrop new-student-trial-theme step-0-fullscreen" id="stageBackdrop" style="background-image: url('assets/new_student_trial_login_bg.jpg?v=20261025-login-hd-v1') !important; background-size: cover !important; background-position: center top !important;">
+                <!-- 關卡進度導航 (4 關題目 + 英雄榜，精巧不裁切) -->
+                <div class="stage-indicator-bar" id="stageIndicatorBar">
+                    <div class="st-step active" data-st="1" title="點擊切換第 1 題"><span class="st-num">1</span><span class="st-txt">MUST評估</span></div>
+                    <div class="st-arrow">›</div>
+                    <div class="st-step" data-st="2" title="點擊切換第 2 題"><span class="st-num">2</span><span class="st-txt">體重流失</span></div>
+                    <div class="st-arrow">›</div>
+                    <div class="st-step" data-st="3" title="點擊切換第 3 題"><span class="st-num">3</span><span class="st-txt">疾病禁食</span></div>
+                    <div class="st-arrow">›</div>
+                    <div class="st-step" data-st="4" title="點擊切換第 4 題"><span class="st-num">4</span><span class="st-txt">風險等級</span></div>
+                    <div class="st-arrow">›</div>
+                    <div class="st-step" data-st="5" title="點擊切換英雄榜"><span class="st-num">🏆</span><span class="st-txt">英雄榜</span></div>
+                </div>
+
+                <div id="supportStage10Anatomy" class="support-stage10-anatomy hidden" role="group" aria-label="點選消化道部位作答">
+                    <img src="assets/support_stage10_anatomy.jpg" alt="口腔、食道、胃部與腸子的消化道示意圖">
+                    <button type="button" class="support-stage10-hotspot hotspot-mouth" data-key="1" aria-label="選擇口腔" aria-pressed="false">
+                        <span>口腔</span>
+                        <div class="support-hotspot-vote-pill">0.0% (0票)</div>
+                    </button>
+                    <button type="button" class="support-stage10-hotspot hotspot-esophagus" data-key="2" aria-label="選擇食道" aria-pressed="false">
+                        <span>食道</span>
+                        <div class="support-hotspot-vote-pill">0.0% (0票)</div>
+                    </button>
+                    <button type="button" class="support-stage10-hotspot hotspot-stomach" data-key="3" aria-label="選擇胃部" aria-pressed="false">
+                        <span>胃部</span>
+                        <div class="support-hotspot-vote-pill">0.0% (0票)</div>
+                    </button>
+                    <button type="button" class="support-stage10-hotspot hotspot-intestine" data-key="4" aria-label="選擇腸子" aria-pressed="false">
+                        <span>腸子</span>
+                        <div class="support-hotspot-vote-pill">0.0% (0票)</div>
+                    </button>
+                    <div id="supportStage10AnatomyStatus" class="support-stage10-anatomy-status" aria-live="polite">點選圖片中的部位作答</div>
+                </div>
+
+                <!-- 新生勇者試煉初始畫面的直接開始按鈕 -->
+                <div id="trialBgStartArea" class="trial-bg-start-area">
+                    <button type="button" id="btnTrialStartDirect" class="btn-trial-start-direct">
+                        <span class="btn-trial-icon">⚔️</span>
+                        <span class="btn-trial-text">開始遊戲</span>
+                    </button>
+                </div>
+
+                <!-- 新生勇者試煉：健康大陸互動大地圖（6大地區精準貼合背景原圖方框，電玩級鏡頭縮放進入關卡） -->
+                <div id="healthContinentMap" class="health-continent-interactive-map hidden" aria-label="健康大陸各關卡地圖">
+                    <!-- 大陸世界畫布：承載地圖底圖、各關卡地標熱區、鏡頭平移放大動畫 -->
+                    <div id="healthContinentWorld" class="health-continent-world">
+                        <div class="health-continent-hotspots">
+                            <!-- 醫療之城 -->
+                            <div class="continent-stage-hotspot hotspot-medical" data-stage="medical" style="top: 29.47%; left: 34.54%; width: 16.06%; height: 4.12%;" aria-label="醫療之城"></div>
+                            <!-- 蔬食之森 -->
+                            <div class="continent-stage-hotspot hotspot-forest" data-stage="forest" style="top: 36.55%; left: 66.52%; width: 16.37%; height: 4.12%;" aria-label="蔬食之森"></div>
+                            <!-- 社區廣場 -->
+                            <div class="continent-stage-hotspot hotspot-community" data-stage="community" style="top: 54.17%; left: 45.48%; width: 16.37%; height: 3.92%;" aria-label="社區廣場"></div>
+                            <!-- 活力運動場 -->
+                            <div class="continent-stage-hotspot hotspot-sports" data-stage="sports" style="top: 62.05%; left: 19.58%; width: 17.32%; height: 4.12%;" aria-label="活力運動場"></div>
+                            <!-- 研究之都 -->
+                            <div class="continent-stage-hotspot hotspot-research" data-stage="research" style="top: 66.16%; left: 70.08%; width: 16.16%; height: 4.12%;" aria-label="研究之都"></div>
+                            <!-- 團膳之港 -->
+                            <div class="continent-stage-hotspot hotspot-port" data-stage="port" style="top: 80.57%; left: 44.68%; width: 16.32%; height: 4.12%;" aria-label="團膳之港"></div>
+                        </div>
+
+                        <!-- 聚焦地標時的光芒光環效果 -->
+                        <div id="continentFocusRing" class="continent-focus-ring hidden"></div>
+                    </div>
+
+                    <!-- 電玩關卡切換閃爍遮罩 (白光/神聖光芒粒子) -->
+                    <div id="continentTransitionFlash" class="continent-transition-flash hidden"></div>
+                </div>
+
+                <!-- 角色立繪舞台 (護理師在左側，前導對話時實習生在右側，完全不遮擋上方病床奶奶) -->
+                <div class="character-stage" id="characterStage">
+                    <div class="char-wrapper char-left hidden" id="sportsAzheCharacter">
+                        <img src="assets/char_sports_azhe_half.png?v=20261016-defringe-v2" alt="阿哲" class="char-sprite" id="sportsAzheImg">
+                    </div>
+                    <div class="char-wrapper char-left speaking" id="charNurse">
+                        <img src="assets/nurse_bust.png" alt="護理師 林語柔" class="char-sprite" id="charTeacherImg">
+                        <div class="char-nametag" id="charTeacherName">護理師 林語柔</div>
+                    </div>
+                    <div class="char-wrapper char-right hidden" id="charStudent">
+                        <img src="assets/student_female_bust.png" alt="營養實習生" class="char-sprite" id="charStudentImg">
+                        <div class="char-nametag" id="charStudentName">營養實習生</div>
+                    </div>
+
+                    <!-- 系統監控中樞 ‧ 艦載終端 NPC 右側專屬：太空休眠艙人物與 NG-01 鼻胃管連線動畫 (單元二第 1 題) -->
+                    <div id="dialogNgHoloContainer" class="character-ng-holo-panel hidden">
+                        <svg class="hologram-svg-mini" viewBox="0 0 350 250" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="podGlassGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.35"/>
+                                    <stop offset="40%" stop-color="#0284c7" stop-opacity="0.12"/>
+                                    <stop offset="100%" stop-color="#00f0ff" stop-opacity="0.3"/>
+                                </linearGradient>
+                                <linearGradient id="personSuitGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" stop-color="#0284c7" stop-opacity="0.85"/>
+                                    <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95"/>
+                                </linearGradient>
+                                <linearGradient id="stomachGradMini" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" stop-color="#fb923c" stop-opacity="0.95"/>
+                                    <stop offset="100%" stop-color="#ea580c" stop-opacity="0.6"/>
+                                </linearGradient>
+                                <filter id="neonFilterMini" x="-20%" y="-20%" width="140%" height="140%">
+                                    <feGaussianBlur stdDeviation="2.5" result="blur" />
+                                    <feMerge>
+                                        <feMergeNode in="blur" />
+                                        <feMergeNode in="SourceGraphic" />
+                                    </feMerge>
+                                </filter>
+                            </defs>
+
+                            <!-- 太空艙生化灌流接口 (休眠艙壁外部供料閥門機械端) -->
+                            <path d="M 68,36 L 86,36 L 86,80 L 76,80 L 76,96" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+                            <rect x="70" y="38" width="32" height="28" rx="4" fill="#0f172a" stroke="#00e5ff" stroke-width="2"/>
+                            <circle cx="86" cy="52" r="5" fill="#00e5ff">
+                                <animate attributeName="opacity" values="1;0.35;1" dur="1.2s" repeatCount="indefinite"/>
+                            </circle>
+                            <path d="M 86,56 L 86,78" fill="none" stroke="#00e5ff" stroke-width="3" stroke-linecap="round"/>
+
+                            <!-- 太空艙內部休眠探員人物 (精準位於最後一個醫療艙內中心) -->
+                            <!-- 頭部與呼吸頭罩 (cx=284) -->
+                            <ellipse cx="284" cy="74" rx="24" ry="26" fill="#1e293b" stroke="#38bdf8" stroke-width="1.6"/>
+                            <!-- 探員休眠面罩與面容側面 (面部朝向左側管線，鼻尖位於 258, 78) -->
+                            <path d="M 284,50 Q 302,54 305,74 Q 302,94 284,96 Q 267,94 263,85 L 258,78 Q 265,74 268,64 Q 273,52 284,50 Z" fill="rgba(56,189,248,0.3)" stroke="#67e8f9" stroke-width="1.4"/>
+                            <!-- 休眠面容微光眼睛閉合線 -->
+                            <path d="M 272,72 Q 277,74 282,72" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round"/>
+                            <!-- 軀幹與胸廓 -->
+                            <path d="M 264,98 L 249,130 L 242,178 Q 242,210 284,210 Q 326,210 326,178 L 319,130 L 304,98 Z" fill="url(#personSuitGrad)" stroke="#0284c7" stroke-width="1.6"/>
+
+                            <!-- 體內胃部發光輪廓 -->
+                            <path d="M 270,148 Q 298,152 294,176 Q 289,198 266,194 Q 252,187 256,168 Q 260,154 270,148 Z" fill="url(#stomachGradMini)" stroke="#f97316" stroke-width="2.2" filter="url(#neonFilterMini)"/>
+                            <text x="274" y="176" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="900" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.9))">胃部</text>
+
+                            <!-- 生化 NG-01 鼻胃管 (連入最後一個醫療艙內探員鼻孔 258,78 直達胃部 274,176) -->
+                            <path id="ngPodTubePath" class="ng-tube-line" d="M 86,78 Q 95,86 130,86 L 210,86 Q 244,85 258,78 Q 273,78 276,94 L 277,148 Q 278,168 274,176" fill="none" stroke="#00e5ff" stroke-width="4.5" stroke-linecap="round" filter="url(#neonFilterMini)"/>
+
+                            <!-- 輸送營養液發光光球 (沿管線流動動畫) -->
+                            <circle class="ng-pulse-ball" r="5" fill="#fef08a">
+                                <animateMotion repeatCount="indefinite" dur="2.4s" path="M 86,78 Q 95,86 130,86 L 210,86 Q 244,85 258,78 Q 273,78 276,94 L 277,148 Q 278,168 274,176"/>
+                            </circle>
+                            <circle class="ng-pulse-ball" r="4" fill="#67e8f9" opacity="0.85">
+                                <animateMotion repeatCount="indefinite" dur="2.4s" begin="1.2s" path="M 86,78 Q 95,86 130,86 L 210,86 Q 244,85 258,78 Q 273,78 276,94 L 277,148 Q 278,168 274,176"/>
+                            </circle>
+
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- 魔龍 Boss 戰鬥舞台 (單元三 Stage 2~5 專屬：勇者戰士 vs 魔龍/巨獸) -->
+                <div class="dragon-boss-arena hidden" id="dragonBossArena">
+                        <!-- 戰士勇者 vs 黑炎魔龍 對戰舞台 -->
+                        <div class="battle-duo-container" id="battleDuoContainer">
+                            <!-- 左側：糖化檢定勇者戰士 -->
+                            <div class="warrior-hero-wrap" id="warriorHeroWrap">
+                                <div class="warrior-aura-glow hidden" id="warriorAuraGlow"></div>
+                                <img src="assets/warrior_hero.png" alt="糖化檢定勇者" class="warrior-hero-sprite" id="warriorHeroSprite">
+                                <div class="warrior-charge-float hidden" id="warriorChargeFloat">+0.5% 蓄力！</div>
+                                <div class="char-nametag warrior-tag">⚔️ 糖化檢定勇者</div>
+                            </div>
+
+                            <!-- 中間：終極斬擊光波 / 魔龍噴火 特效區 -->
+                            <div class="battle-clash-zone" id="battleClashZone">
+                                <div class="warrior-slash-wave hidden" id="warriorSlashWave">⚡ 6.5% 聖光斬擊 ➔</div>
+                                <div class="dragon-flame-wave hidden" id="dragonFlameWave">🔥 魔龍烈火吐息 ➔</div>
+                            </div>
+
+                            <!-- 右側：黑炎魔龍 / 關卡魔物 -->
+                            <div class="dragon-char-wrap" id="dragonCharWrap">
+                                <img src="assets/dragon_boss.png" alt="黑炎魔龍" class="dragon-sprite" id="dragonBossSprite">
+                                <!-- 噴火攻擊特效層 -->
+                                <div class="dragon-flame-burst hidden" id="dragonFlameBurst"></div>
+                                <!-- 受擊閃爍特效層 -->
+                                <div class="dragon-hit-flash hidden" id="dragonHitFlash"></div>
+                                <!-- 漂浮受擊傷害字樣 -->
+                                <div class="dragon-damage-text hidden" id="dragonDamageText">💥 HIT!</div>
+                                <div class="char-nametag dragon-tag">🔥 黑炎魔龍</div>
+                            </div>
+                        </div>
+
+                        <!-- 玩家發射之終極攻擊光波 -->
+                        <div class="player-attack-beam hidden" id="playerAttackBeam"></div>
+                    </div>
+
+                    <!-- 糖尿病衛教餐桌 ‧ 食物點選互動舞台 (單元三 第11題 專屬) -->
+                    <div id="rpgDiningTableArea" class="rpg-dining-table-area hidden">
+                        <div class="rpg-dining-table-foods-row">
+                            <!-- 食物 1: 白米粥 -->
+                            <div class="table-food-item" data-key="1" id="diningFood1" onclick="window.selectDiningFood('1')">
+                                <span class="table-food-vote-pill" data-vote-key="1">0.0% (0票)</span>
+                                <div class="table-food-img-wrap">
+                                    <img src="assets/table_food_porridge.png" class="table-food-sprite" alt="白米粥">
+                                </div>
+                                <div class="table-food-name-pill">
+                                    <span class="food-name-text">白米粥</span>
+                                </div>
+                            </div>
+
+                            <!-- 食物 2: 葡萄汁 -->
+                            <div class="table-food-item" data-key="2" id="diningFood2" onclick="window.selectDiningFood('2')">
+                                <span class="table-food-vote-pill" data-vote-key="2">0.0% (0票)</span>
+                                <div class="table-food-img-wrap">
+                                    <img src="assets/table_food_grapejuice.png" class="table-food-sprite" alt="葡萄汁">
+                                </div>
+                                <div class="table-food-name-pill">
+                                    <span class="food-name-text">葡萄汁</span>
+                                </div>
+                            </div>
+
+                            <!-- 食物 3: 裸麥麵包 (正確答案, GI 最小) -->
+                            <div class="table-food-item" data-key="3" id="diningFood3" onclick="window.selectDiningFood('3')">
+                                <span class="table-food-vote-pill" data-vote-key="3">0.0% (0票)</span>
+                                <div class="table-food-img-wrap">
+                                    <img src="assets/table_food_bread.png" class="table-food-sprite" alt="裸麥麵包">
+                                </div>
+                                <div class="table-food-name-pill">
+                                    <span class="food-name-text">裸麥麵包</span>
+                                </div>
+                            </div>
+
+                            <!-- 食物 4: 早餐玉米片 -->
+                            <div class="table-food-item" data-key="4" id="diningFood4" onclick="window.selectDiningFood('4')">
+                                <span class="table-food-vote-pill" data-vote-key="4">0.0% (0票)</span>
+                                <div class="table-food-img-wrap">
+                                    <img src="assets/table_food_cornflakes.png" class="table-food-sprite" alt="早餐玉米片">
+                                </div>
+                                <div class="table-food-name-pill">
+                                    <span class="food-name-text">早餐玉米片</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 醫療之城 ‧ 病房木桌食物挑選舞台 -->
+                    <div id="medicalCityFoodTableArea" class="medical-city-food-table-area hidden" aria-label="挑選給王伯伯吃的食物" onclick="event.stopPropagation();">
+                        <div class="medical-city-table-banner" onclick="event.stopPropagation();">
+                            <span class="table-banner-pill">給王伯伯的食物</span>
+                            <span class="table-selected-badge" id="medicalFoodSelectedCount">已選 0 項</span>
+                        </div>
+                        <div class="medical-city-foods-grid">
+                            <div class="table-food-card" data-food="egg" onclick="event.stopPropagation(); window.selectMedicalCityFood('egg', '蛋')">
+                                <div class="food-img-box"><img src="assets/food_egg.png" alt="蛋" class="food-sprite"></div>
+                                <span class="food-name-pill">蛋</span>
+                                <span class="food-check-mark hidden">✓</span>
+                            </div>
+                            <div class="table-food-card" data-food="veggie" onclick="event.stopPropagation(); window.selectMedicalCityFood('veggie', '青菜')">
+                                <div class="food-img-box"><img src="assets/food_veggie.png" alt="青菜" class="food-sprite"></div>
+                                <span class="food-name-pill">青菜</span>
+                                <span class="food-check-mark hidden">✓</span>
+                            </div>
+                            <div class="table-food-card" data-food="boba" onclick="event.stopPropagation(); window.selectMedicalCityFood('boba', '珍珠奶茶')">
+                                <div class="food-img-box"><img src="assets/food_boba.png" alt="珍珠奶茶" class="food-sprite"></div>
+                                <span class="food-name-pill">珍珠奶茶</span>
+                                <span class="food-check-mark hidden">✓</span>
+                            </div>
+                            <div class="table-food-card" data-food="rice" onclick="event.stopPropagation(); window.selectMedicalCityFood('rice', '飯')">
+                                <div class="food-img-box"><img src="assets/food_rice.png" alt="飯" class="food-sprite"></div>
+                                <span class="food-name-pill">飯</span>
+                                <span class="food-check-mark hidden">✓</span>
+                            </div>
+                            <div class="table-food-card" data-food="fish" onclick="event.stopPropagation(); window.selectMedicalCityFood('fish', '魚')">
+                                <div class="food-img-box"><img src="assets/food_fish.png" alt="魚" class="food-sprite"></div>
+                                <span class="food-name-pill">魚</span>
+                                <span class="food-check-mark hidden">✓</span>
+                            </div>
+                            <div class="table-food-card" data-food="milk" onclick="event.stopPropagation(); window.selectMedicalCityFood('milk', '牛奶')">
+                                <div class="food-img-box"><img src="assets/food_milk.png" alt="牛奶" class="food-sprite"></div>
+                                <span class="food-name-pill">牛奶</span>
+                                <span class="food-check-mark hidden">✓</span>
+                            </div>
+                            <div class="table-food-card" data-food="cake" onclick="event.stopPropagation(); window.selectMedicalCityFood('cake', '蛋糕')">
+                                <div class="food-img-box"><img src="assets/food_cake.png" alt="蛋糕" class="food-sprite"></div>
+                                <span class="food-name-pill">蛋糕</span>
+                                <span class="food-check-mark hidden">✓</span>
+                            </div>
+                        </div>
+                        <div class="medical-city-table-actions">
+                            <button type="button" class="btn-submit-medical-food" id="btnSubmitMedicalFood" onclick="window.submitMedicalCityFoodSelection()">
+                                🩺 送出餐點評估 ➔
+                            </button>
+                        </div>
+                        <div id="medicalCityFoodFeedback" class="medical-city-food-feedback hidden"></div>
+                    </div>
+
+
+                    <!-- 蔬食之森 第一關 ‧ 直向 9:16 選項A/選項B RPG背景覆蓋舞台 -->
+                    <div id="forestQuizArea" class="forest-quiz-overlay hidden" style="display: none !important;" aria-label="蔬食之森均衡飲食教學選項" onclick="event.stopPropagation();">
+                        <!-- 選項 A (左邊) -->
+                        <div class="forest-overlay-card forest-opt-card-a" data-opt="A" onclick="event.stopPropagation(); window.selectForestStage1Option('A', event)">
+                            <div class="forest-overlay-img-box">
+                                <img src="assets/forest_stage1_opt_a.jpg?v=20261023-opt-a" alt="選項 A" class="forest-overlay-img">
+                                <div class="forest-overlay-top-badge">選項 A</div>
+                                <div class="forest-overlay-result-badge wrong">❌ 容易打瞌睡</div>
+                            </div>
+                            <div class="forest-overlay-info">
+                                <span class="forest-overlay-checkbox"></span>
+                                <span class="forest-overlay-title">投影片單向講授：抄寫課本與投影片筆記</span>
+                            </div>
+                        </div>
+
+                        <!-- 選項 B (右邊，正確答案) -->
+                        <div class="forest-overlay-card forest-opt-card-b" data-opt="B" onclick="event.stopPropagation(); window.selectForestStage1Option('B', event)">
+                            <div class="forest-overlay-img-box">
+                                <img src="assets/forest_stage1_opt_b.jpg?v=20261023-opt-b" alt="選項 B" class="forest-overlay-img">
+                                <div class="forest-overlay-top-badge">選項 B</div>
+                                <div class="forest-overlay-result-badge correct">✅ 正確教學設計</div>
+                            </div>
+                            <div class="forest-overlay-info">
+                                <span class="forest-overlay-checkbox"></span>
+                                <span class="forest-overlay-title">我的餐盤實作互動：利用食物模型動手搭配均衡餐盤</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 蔬食之森 第二關 ‧ 題目2 專屬直向 9:16 雙選項A/選項B RPG背景覆蓋舞台 -->
+                    <div id="forestStage2QuizArea" class="forest-quiz-overlay hidden" style="display: none !important;" aria-label="蔬食之森食農教育選項" onclick="event.stopPropagation();">
+                        <!-- 選項 A (左邊，正確答案) -->
+                        <div class="forest-overlay-card forest-stage2-opt-card-a" data-opt="A" onclick="event.stopPropagation(); window.selectForestStage2Option('A', event)">
+                            <div class="forest-overlay-img-box">
+                                <img src="assets/forest_stage2_opt_a.jpg?v=20261023-opt-a" alt="選項 A" class="forest-overlay-img">
+                                <div class="forest-overlay-top-badge">選項 A</div>
+                                <div class="forest-overlay-result-badge correct">✅ 正確食農教育</div>
+                            </div>
+                            <div class="forest-overlay-info">
+                                <span class="forest-overlay-checkbox"></span>
+                                <span class="forest-overlay-title">親自種植蔬菜，觀察生長過程並認識農田</span>
+                            </div>
+                        </div>
+
+                        <!-- 選項 B (右邊) -->
+                        <div class="forest-overlay-card forest-stage2-opt-card-b" data-opt="B" onclick="event.stopPropagation(); window.selectForestStage2Option('B', event)">
+                            <div class="forest-overlay-img-box">
+                                <img src="assets/forest_stage2_opt_b.jpg?v=20261023-opt-b" alt="選項 B" class="forest-overlay-img">
+                                <div class="forest-overlay-top-badge">選項 B</div>
+                                <div class="forest-overlay-result-badge wrong">❌ 缺乏土地連結</div>
+                            </div>
+                            <div class="forest-overlay-info">
+                                <span class="forest-overlay-checkbox"></span>
+                                <span class="forest-overlay-title">教導蔬菜的營養成分及零售價格</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="researchStage1QuizArea" class="forest-quiz-overlay hidden" style="display: none !important;" aria-label="研究之都實證營養科學選項" onclick="event.stopPropagation();">
+                        <!-- 選項 A (左邊，錯誤答案：喝含糖飲料是造成肥胖的原因) -->
+                        <div class="forest-overlay-card research-stage1-opt-card-a" data-opt="A" onclick="event.stopPropagation(); window.selectResearchStage1Option('A', event)">
+                            <div class="forest-overlay-img-box">
+                                <img src="assets/research_stage1_opt_a.jpg?v=20261025-v1" alt="選項 A" class="forest-overlay-img">
+                                <div class="forest-overlay-top-badge">選項 A</div>
+                                <div class="forest-overlay-result-badge wrong">❌ 相關不等於因果</div>
+                            </div>
+                            <div class="forest-overlay-info">
+                                <span class="forest-overlay-checkbox"></span>
+                                <span class="forest-overlay-title">喝含糖飲料是造成肥胖的原因</span>
+                            </div>
+                        </div>
+
+                        <!-- 選項 B (右邊，正確答案：喝飲料與肥胖相關，但不具因果關係) -->
+                        <div class="forest-overlay-card research-stage1-opt-card-b" data-opt="B" onclick="event.stopPropagation(); window.selectResearchStage1Option('B', event)">
+                            <div class="forest-overlay-img-box">
+                                <img src="assets/research_stage1_opt_b.jpg?v=20261025-v1" alt="選項 B" class="forest-overlay-img">
+                                <div class="forest-overlay-top-badge">選項 B</div>
+                                <div class="forest-overlay-result-badge correct">✅ 正確科學推論</div>
+                            </div>
+                            <div class="forest-overlay-info">
+                                <span class="forest-overlay-checkbox"></span>
+                                <span class="forest-overlay-title">喝飲料與肥胖相關，但不具因果關係</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="researchStage2QuizArea" class="forest-quiz-overlay hidden" style="display: none !important;" aria-label="研究之都科學研究方法選項" onclick="event.stopPropagation();">
+                        <!-- 選項 A (左邊，正確答案：依據研究問題，蒐集資料與分析) -->
+                        <div class="forest-overlay-card research-stage2-opt-card-a" data-opt="A" onclick="event.stopPropagation(); window.selectResearchStage2Option('A', event)">
+                            <div class="forest-overlay-img-box">
+                                <img src="assets/research_stage2_opt_a.jpg?v=20261025-v1" alt="選項 A" class="forest-overlay-img">
+                                <div class="forest-overlay-top-badge">選項 A</div>
+                                <div class="forest-overlay-result-badge correct" style="display:none !important;"></div>
+                            </div>
+                            <div class="forest-overlay-info">
+                                <span class="forest-overlay-checkbox"></span>
+                                <span class="forest-overlay-title">依據研究問題，蒐集資料與分析</span>
+                            </div>
+                        </div>
+
+                        <!-- 選項 B (右邊，錯誤答案：看網路熱門文章或詢問ChatGPT) -->
+                        <div class="forest-overlay-card research-stage2-opt-card-b" data-opt="B" onclick="event.stopPropagation(); window.selectResearchStage2Option('B', event)">
+                            <div class="forest-overlay-img-box">
+                                <img src="assets/research_stage2_opt_b.jpg?v=20261025-v1" alt="選項 B" class="forest-overlay-img">
+                                <div class="forest-overlay-top-badge">選項 B</div>
+                                <div class="forest-overlay-result-badge wrong">❌ 缺乏實證與同儕審查</div>
+                            </div>
+                            <div class="forest-overlay-info">
+                                <span class="forest-overlay-checkbox"></span>
+                                <span class="forest-overlay-title">看網路熱門文章或詢問ChatGPT</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 活力運動場 ‧ ABCD 四列全圖直條互動舞台 (影片播畢專屬) -->
+                    <div id="sportsQuizArea" class="sports-options-overlay hidden" style="display: none !important;" aria-label="運動營養增肌策略 ABCD 四選項" onclick="event.stopPropagation();">
+                        <!-- 選項 A -->
+                        <button type="button" class="sports-option-hotspot sports-opt-a" data-opt="A" onclick="event.stopPropagation(); window.selectSportsOption('A', event)">
+                            <div class="sports-hotspot-top">
+                                <span class="sports-hotspot-badge">選項 A</span>
+                            </div>
+                        </button>
+                        <!-- 選項 B -->
+                        <button type="button" class="sports-option-hotspot sports-opt-b" data-opt="B" onclick="event.stopPropagation(); window.selectSportsOption('B', event)">
+                            <div class="sports-hotspot-top">
+                                <span class="sports-hotspot-badge">選項 B</span>
+                            </div>
+                        </button>
+                        <!-- 選項 C (正確答案) -->
+                        <button type="button" class="sports-option-hotspot sports-opt-c" data-opt="C" onclick="event.stopPropagation(); window.selectSportsOption('C', event)">
+                            <div class="sports-hotspot-top">
+                                <span class="sports-hotspot-badge">選項 C</span>
+                            </div>
+                        </button>
+                        <!-- 選項 D -->
+                        <button type="button" class="sports-option-hotspot sports-opt-d" data-opt="D" onclick="event.stopPropagation(); window.selectSportsOption('D', event)">
+                            <div class="sports-hotspot-top">
+                                <span class="sports-hotspot-badge">選項 D</span>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- 團膳勇者試煉 ‧ 四象限田字格午餐菜單作答舞台 (影片播畢專屬) -->
+                    <div id="portQuizArea" class="port-quiz-overlay hidden" style="display: none !important;" aria-label="團膳午餐菜單選擇 ABCD 四選項" onclick="event.stopPropagation();">
+                        <img src="assets/port_stage_options_menu.jpg?v=20261025-port-menu-sync" alt="團膳午餐四道菜單 ABCD" class="port-quiz-bg-img">
+                        <div class="port-quiz-badge-rail" aria-label="團膳菜單選項">
+                            <button type="button" class="port-quad-badge port-quad-badge-a" data-opt="A" aria-label="選項 A" onclick="event.stopPropagation(); window.selectPortOption('A', event)">選項 A</button>
+                            <button type="button" class="port-quad-badge port-quad-badge-c" data-opt="C" aria-label="選項 C" onclick="event.stopPropagation(); window.selectPortOption('C', event)">選項 C</button>
+                            <button type="button" class="port-quad-badge port-quad-badge-d" data-opt="D" aria-label="選項 D" onclick="event.stopPropagation(); window.selectPortOption('D', event)">選項 D</button>
+                            <button type="button" class="port-quad-badge port-quad-badge-b" data-opt="B" aria-label="選項 B" onclick="event.stopPropagation(); window.selectPortOption('B', event)">選項 B</button>
+                        </div>
+                        <!-- 選項 A (左上) -->
+                        <button type="button" class="port-quadrant-btn port-quad-a" data-opt="A" onclick="event.stopPropagation(); window.selectPortOption('A', event)">
+                        </button>
+                        <!-- 選項 B (右上) -->
+                        <button type="button" class="port-quadrant-btn port-quad-b" data-opt="B" onclick="event.stopPropagation(); window.selectPortOption('B', event)">
+                        </button>
+                        <!-- 選項 C (左下，正確答案) -->
+                        <button type="button" class="port-quadrant-btn port-quad-c" data-opt="C" onclick="event.stopPropagation(); window.selectPortOption('C', event)">
+                        </button>
+                        <!-- 選項 D (右下) -->
+                        <button type="button" class="port-quadrant-btn port-quad-d" data-opt="D" onclick="event.stopPropagation(); window.selectPortOption('D', event)">
+                        </button>
+                    </div>
+
+                    <!-- 夜間血糖偵探 × 醫療冒險 ‧ 團隊小隊任務儀表板 (單元六 第12題 專屬) -->
+                    <div id="detectiveTeamArea" class="detective-team-area hidden">
+                        <div class="detective-team-container">
+                            <div class="detective-header-banner">
+                                <span class="detective-badge">🕵️ 團隊合作 ‧ 血糖偵查小隊</span>
+                                <span class="detective-time-clock">🌙 深夜 2:00 ‧ 神秘低血糖警報</span>
+                            </div>
+                            <div class="detective-roles-grid">
+                                <!-- 角色 1: 血糖偵探 -->
+                                <div class="detective-role-card role-glucose" id="roleCard1">
+                                    <div class="role-img-wrap"><img src="assets/detective_role_glucose.png" class="detective-role-avatar" alt="血糖偵探"></div>
+                                    <div class="role-title">🔍 血糖偵探</div>
+                                    <div class="role-mission">蒐集血糖數值線索</div>
+                                    <div class="role-assigned-user" id="roleUser1">血糖數據分析員</div>
+                                </div>
+                                <!-- 角色 2: 醫療學者 -->
+                                <div class="detective-role-card role-scholar" id="roleCard2">
+                                    <div class="role-img-wrap"><img src="assets/detective_role_scholar.png" class="detective-role-avatar" alt="醫療學者"></div>
+                                    <div class="role-title">🧠 醫療學者</div>
+                                    <div class="role-mission">判讀生理機轉</div>
+                                    <div class="role-assigned-user" id="roleUser2">臨床機轉專家</div>
+                                </div>
+                                <!-- 角色 3: 荷爾蒙勇者 -->
+                                <div class="detective-role-card role-hormone" id="roleCard3">
+                                    <div class="role-img-wrap"><img src="assets/detective_role_hormone.png" class="detective-role-avatar" alt="荷爾蒙勇者"></div>
+                                    <div class="role-title">🛡️ 荷爾蒙勇者</div>
+                                    <div class="role-mission">找出逆調節賀爾蒙</div>
+                                    <div class="role-assigned-user" id="roleUser3">荷爾蒙防衛隊</div>
+                                </div>
+                                <!-- 角色 4: 任務隊長 -->
+                                <div class="detective-role-card role-leader" id="roleCard4">
+                                    <div class="role-img-wrap"><img src="assets/detective_role_leader.png" class="detective-role-avatar" alt="任務隊長"></div>
+                                    <div class="role-title">👑 任務隊長</div>
+                                    <div class="role-mission">整合線索、做最後決策</div>
+                                    <div class="role-assigned-user" id="roleUser4">指揮官決策</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 單元七 第 1 題 腎臟晶石傳送門 RPG 互動區 (傳說對決風格全景地圖移動 + 攝影機跟隨 + 4座指定區域選答案) -->
+                    <div id="kidneyGateRpgArea" class="kidney-gate-rpg-area hidden" aria-label="腎臟專科傳說試煉場">
+                        <!-- 1. 世界地圖滾動層 (隨人物即時平移滾動) -->
+                        <div id="kidneyMobaWorld" class="kidney-moba-world">
+                            <!-- 地面魔導能量軌跡與裝飾線 -->
+                            <div class="moba-world-ambient-grid"></div>
+
+                            <!-- 4 座指定選題區域 (指定區域祭壇 / 佔領點 A, B, C, D) -->
+                            <div class="kidney-portals-container">
+                                <!-- 指定區域 A (紅色藥水瓶) -->
+                                <div class="kidney-portal-zone portal-opt-a" data-key="1" id="kidneyPortal1" onclick="window.selectKidneyPortal('1')">
+                                    <div class="moba-altar-ground-ring">
+                                        <div class="altar-pulse-core"></div>
+                                        <div class="altar-rune-circle"></div>
+                                        <div class="altar-letter-badge">A</div>
+                                    </div>
+                                    <div class="portal-info-card">
+                                        <div class="portal-badge-header">
+                                            <span class="portal-badge-letter">區域 A</span>
+                                            <span class="portal-vote-pill" data-vote-key="1">0.0% (0票)</span>
+                                        </div>
+                                        <div class="portal-title-bubble">尿液白蛋白排泄率</div>
+                                        <div class="portal-status-badge">📍 走入此處選擇 A</div>
+                                    </div>
+                                </div>
+
+                                <!-- 指定區域 B (綠色仙草葉 - 正確答案) -->
+                                <div class="kidney-portal-zone portal-opt-b" data-key="2" id="kidneyPortal2" onclick="window.selectKidneyPortal('2')">
+                                    <div class="moba-altar-ground-ring">
+                                        <div class="altar-pulse-core"></div>
+                                        <div class="altar-rune-circle"></div>
+                                        <div class="altar-letter-badge">B</div>
+                                    </div>
+                                    <div class="portal-info-card">
+                                        <div class="portal-badge-header">
+                                            <span class="portal-badge-letter">區域 B</span>
+                                            <span class="portal-vote-pill" data-vote-key="2">0.0% (0票)</span>
+                                        </div>
+                                        <div class="portal-title-bubble">血漿白蛋白濃度</div>
+                                        <div class="portal-status-badge">📍 走入此處選擇 B</div>
+                                    </div>
+                                </div>
+
+                                <!-- 指定區域 C (藍色魔導卷軸) -->
+                                <div class="kidney-portal-zone portal-opt-c" data-key="3" id="kidneyPortal3" onclick="window.selectKidneyPortal('3')">
+                                    <div class="moba-altar-ground-ring">
+                                        <div class="altar-pulse-core"></div>
+                                        <div class="altar-rune-circle"></div>
+                                        <div class="altar-letter-badge">C</div>
+                                    </div>
+                                    <div class="portal-info-card">
+                                        <div class="portal-badge-header">
+                                            <span class="portal-badge-letter">區域 C</span>
+                                            <span class="portal-vote-pill" data-vote-key="3">0.0% (0票)</span>
+                                        </div>
+                                        <div class="portal-title-bubble">血漿菊糖清除率</div>
+                                        <div class="portal-status-badge">📍 走入此處選擇 C</div>
+                                    </div>
+                                </div>
+
+                                <!-- 指定區域 D (黃色齒輪寶盒) -->
+                                <div class="kidney-portal-zone portal-opt-d" data-key="4" id="kidneyPortal4" onclick="window.selectKidneyPortal('4')">
+                                    <div class="moba-altar-ground-ring">
+                                        <div class="altar-pulse-core"></div>
+                                        <div class="altar-rune-circle"></div>
+                                        <div class="altar-letter-badge">D</div>
+                                    </div>
+                                    <div class="portal-info-card">
+                                        <div class="portal-badge-header">
+                                            <span class="portal-badge-letter">區域 D</span>
+                                            <span class="portal-vote-pill" data-vote-key="4">0.0% (0票)</span>
+                                        </div>
+                                        <div class="portal-title-bubble">血漿肌酸酐清除率</div>
+                                        <div class="portal-status-badge">📍 走入此處選擇 D</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 地面目標點擊導引光環 -->
+                            <div id="kidneyTargetMarker" class="kidney-target-marker hidden"></div>
+
+                            <!-- 走動 RPG 實習營養師角色 (附傳說對決血條、等級與對話) -->
+                            <div id="kidneyRpgPlayer" class="kidney-rpg-player" style="left: 50%; top: 76%;">
+                                <div class="player-shadow"></div>
+                                <div class="player-ground-aura"></div>
+                                <div class="hero-overhead-hud">
+                                    <div class="hero-id-row">
+                                        <span class="hero-name-label" id="kidneyHeroName">營養實習生</span>
+                                    </div>
+                                    <div class="hero-hp-bar">
+                                        <div class="hero-hp-fill"></div>
+                                    </div>
+                                </div>
+                                <img src="assets/hero_player_male_hd.png" alt="RPG 營養實習生" class="player-sprite" id="kidneyHeroSprite">
+                            </div>
+                        </div>
+
+                        <!-- 2. 傳說對決 HUD 介面層 (固定視角，不隨地圖移動) -->
+                        <div class="kidney-moba-hud">
+                            <!-- 頂部任務題目指示條 (含朗讀題目按鈕與放大題目內容) -->
+                            <div class="moba-hud-top-bar" id="kidneyMobaTopBar">
+                                <div class="moba-quest-header">
+                                    <button type="button" class="moba-voice-btn" id="mobaVoiceBtn" onclick="window.speakDialogText()">🔊 朗讀題目</button>
+                                    <button type="button" class="moba-voice-btn moba-demo-btn" id="mobaDemoBtn" style="display:none;" onclick="window.simulateKidneyStudents(5)">👥 模擬5位學生加入</button>
+                                </div>
+                                <div class="moba-quest-text">下列何者不是測量腎臟功能的常用參考指標？</div>
+                                <!-- 答案公布橫幅 (公布答案後顯示正確答案與解析，學生端可見，教師端隱藏) -->
+                                <div id="mobaRevealedCorrectBox" class="moba-revealed-correct-box hidden">
+                                    <div class="correct-title">👑 正確答案：【B. 血漿白蛋白濃度】</div>
+                                    <div class="correct-desc">💡 解析：白蛋白由肝臟合成；腎功能常用指標為腎絲球濾過率、尿素氮與肌酸酐清除率。</div>
+                                </div>
+                            </div>
+
+                            <!-- 右上角傳說對決雷達小地圖 -->
+                            <div id="kidneyMinimap" class="kidney-minimap" title="點擊小地圖可快速前往">
+                                <div class="minimap-radar-sweep"></div>
+                                <div class="minimap-node node-a" title="區域 A">A</div>
+                                <div class="minimap-node node-b" title="區域 B">B</div>
+                                <div class="minimap-node node-c" title="區域 C">C</div>
+                                <div class="minimap-node node-d" title="區域 D">D</div>
+                                <div id="minimapCamBox" class="minimap-cam-box"></div>
+                                <div id="minimapHeroDot" class="minimap-hero-dot"></div>
+                            </div>
+
+                            <!-- 底部快捷前往指定區域按鈕條 (統一格式：前往A區、前往B區、前往C區、前往D區) -->
+                            <div class="moba-quick-nav-bar">
+                                <button type="button" class="quick-nav-btn nav-a" data-target-key="1" onclick="window.selectKidneyPortal('1')"><span class="nav-badge">A</span> 前往A區</button>
+                                <button type="button" class="quick-nav-btn nav-b" data-target-key="2" onclick="window.selectKidneyPortal('2')"><span class="nav-badge">B</span> 前往B區</button>
+                                <button type="button" class="quick-nav-btn nav-c" data-target-key="3" onclick="window.selectKidneyPortal('3')"><span class="nav-badge">C</span> 前往C區</button>
+                                <button type="button" class="quick-nav-btn nav-d" data-target-key="4" onclick="window.selectKidneyPortal('4')"><span class="nav-badge">D</span> 前往D區</button>
+                            </div>
+
+                            <!-- 左下角傳說對決風格移動搖桿 (Joystick) -->
+                            <div id="kidneyJoystickArea" class="kidney-joystick-area">
+                                <div id="kidneyJoystickBase" class="kidney-joystick-base">
+                                    <div class="joystick-ring-outer"></div>
+                                    <div class="joystick-arrow-n">▲</div>
+                                    <div class="joystick-arrow-s">▼</div>
+                                    <div class="joystick-arrow-w">◀</div>
+                                    <div class="joystick-arrow-e">▶</div>
+                                    <div class="joystick-ring-inner"></div>
+                                    <div id="kidneyJoystickKnob" class="kidney-joystick-knob">
+                                        <div class="knob-core"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 配方灌食拖曳區 (位於 stageBackdrop 內部右上角病人頭部/灌食位置) -->
+                    <img id="formulaFeedingAnimation" class="formula-feeding-animation hidden" alt="管灌灌食操作動畫">
+                    <div id="formulaPatientDropZone" class="formula-patient-drop-zone hidden" aria-label="將管灌配方拖曳至病人"></div>
+                </div>
+
+            <!-- 下方交互面板 (對話框 + 大字體選項，適當高度不遮擋阿嬤) -->
+            <div class="rpg-bottom-panel" id="rpgBottomPanel">
+                <!-- 配方瓶選擇選單 (位於下方交互面板，不遮擋病房與病床) -->
+                <div id="formulaBottleChoices" class="formula-bottle-choices hidden" aria-label="管灌配方選擇"></div>
+                <!-- RPG 對話框 (點擊推進對話，無跳過按鈕) -->
+                <div class="rpg-dialog-box" id="dialogBox" onclick="if(typeof window.__fyuAdvanceTrialDialog==='function'){window.__fyuAdvanceTrialDialog(event);}" role="button" tabindex="0">
+                    <div class="dialog-box-border">
+                        <div class="dialog-header-bar">
+                            <div class="speaker-name-badge" id="speakerBadge">護理師 林語柔</div>
+                            <button id="btnReplayQuestionVoice" class="btn-voice-replay" title="點擊重播題目朗讀">🔊 朗讀題目</button>
+                        </div>
+                        <div class="dialog-text-body" id="dialogContent"></div>
+                        <div class="dialog-indicator" id="dialogIndicator">點擊對話框繼續 💬 ➔</div>
+                    </div>
+                </div>
+
+                <!-- 即時答題得分反饋橫幅 (答對加分/答錯提示無得分) -->
+                <div id="questionFeedbackBanner" class="feedback-banner hidden"></div>
+
+                <!-- 數值拉拉條出擊器 (Stage 2 & Stage 3 專屬) -->
+                <div id="a1cLiftingWidget" class="a1c-lifting-widget hidden">
+                    <div class="a1c-widget-header">
+                        <span class="a1c-badge-pill" id="sliderBadgePill">⚔️ 決戰魔龍 ‧ 糖化血色素</span>
+                        <h4 id="sliderWidgetTitle">糖化血色素（HbA1c）拉拉條判定出擊</h4>
+                        <span class="a1c-target-tag" id="sliderTargetTag">🎯 判定切點出擊</span>
+                    </div>
+                    <div class="a1c-display-box">
+                        <div class="a1c-num-wrap">
+                            <span class="a1c-label" id="sliderValueLabel">設定診斷數值：</span>
+                            <div class="a1c-val-container">
+                                <span class="a1c-value" id="a1cCurrentVal">0.0</span>
+                                <span class="a1c-unit" id="a1cUnitVal">%</span>
+                            </div>
+                        </div>
+                        <div class="a1c-slider-wrap">
+                            <input type="range" id="a1cRangeSlider" min="0.0" max="10.0" step="0.1" value="0.0" class="a1c-slider-input">
+                            <div class="a1c-slider-ticks" id="sliderTicksContainer">
+                                <span>0%</span>
+                                <span>2%</span>
+                                <span>4%</span>
+                                <span>6%</span>
+                                <span>8%</span>
+                                <span>10%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="a1c-status-msg" id="a1cStatusMsg">
+                        🎮 請拖曳上方拉拉條調整數值，並點選「蓄力出擊」！
+                    </div>
+                    <div class="a1c-control-row">
+                        <button type="button" id="btnA1cAttack" class="btn-a1c-attack">
+                            ⚔️ 鎖定數值 ‧ 蓄力出擊！
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 單元三 第6題 專屬：NCP 生化抽血數據整頁複選模組 -->
+                <div id="dmStage6LabWidget" class="dm-stage6-lab-widget hidden">
+                    <div class="lab-widget-header">
+                        <span class="lab-badge-pill">📋 NCP 臨床營養評估</span>
+                        <h4 id="labWidgetTitle">竹科高階主管 陳先生 ‧ 健檢抽血生化數據報告單</h4>
+                        <span class="lab-target-tag">🩺 請勾選所有「異常數值」</span>
+                    </div>
+
+                    <div class="lab-report-sheet">
+                        <div class="report-meta-row">
+                            <span>受檢個案：<strong>陳先生 (48歲 男性)</strong></span>
+                            <span>工時狀況：<strong>每週 60 小時 ‧ 常態外食久坐</strong></span>
+                            <span>送檢單位：<strong>新竹科學園區 企業醫務室</strong></span>
+                        </div>
+                        <table class="clean-lab-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 38%;">檢驗項目</th>
+                                    <th style="width: 26%;">個案檢驗值</th>
+                                    <th style="width: 36%;">生化異常判定</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-item="fpg">
+                                    <td><strong>空腹血漿血糖 (FPG)</strong></td>
+                                    <td><span class="lab-val">138 mg/dL</span></td>
+                                    <td>
+                                        <label class="lab-checkbox-label">
+                                            <input type="checkbox" class="lab-check" value="fpg">
+                                            <span class="check-custom"></span>
+                                            <span class="check-text">異常指標&nbsp;⚠️</span>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr data-item="a1c">
+                                    <td><strong>糖化血色素 (HbA1c)</strong></td>
+                                    <td><span class="lab-val">7.4 %</span></td>
+                                    <td>
+                                        <label class="lab-checkbox-label">
+                                            <input type="checkbox" class="lab-check" value="a1c">
+                                            <span class="check-custom"></span>
+                                            <span class="check-text">異常指標&nbsp;⚠️</span>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr data-item="ogtt">
+                                    <td><strong>75g OGTT 第 2 小時血糖</strong></td>
+                                    <td><span class="lab-val">132 mg/dL</span></td>
+                                    <td>
+                                        <label class="lab-checkbox-label">
+                                            <input type="checkbox" class="lab-check" value="ogtt">
+                                            <span class="check-custom"></span>
+                                            <span class="check-text">異常指標&nbsp;⚠️</span>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr data-item="tg">
+                                    <td><strong>三酸甘油脂 (TG)</strong></td>
+                                    <td><span class="lab-val">225 mg/dL</span></td>
+                                    <td>
+                                        <label class="lab-checkbox-label">
+                                            <input type="checkbox" class="lab-check" value="tg">
+                                            <span class="check-custom"></span>
+                                            <span class="check-text">異常指標&nbsp;⚠️</span>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr data-item="hdl">
+                                    <td><strong>高密度脂蛋白 (HDL-C)</strong></td>
+                                    <td><span class="lab-val">45 mg/dL</span></td>
+                                    <td>
+                                        <label class="lab-checkbox-label">
+                                            <input type="checkbox" class="lab-check" value="hdl">
+                                            <span class="check-custom"></span>
+                                            <span class="check-text">異常指標&nbsp;⚠️</span>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr data-item="ldl">
+                                    <td><strong>低密度脂蛋白 (LDL-C)</strong></td>
+                                    <td><span class="lab-val">115 mg/dL</span></td>
+                                    <td>
+                                        <label class="lab-checkbox-label">
+                                            <input type="checkbox" class="lab-check" value="ldl">
+                                            <span class="check-custom"></span>
+                                            <span class="check-text">異常指標&nbsp;⚠️</span>
+                                        </label>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="lab-feedback-msg" id="labFeedbackMsg">
+                        💡 臨床指引：請仔細比對各項指標數值，勾選所有偏高或偏低之異常生化項目後點選送出！
+                    </div>
+
+                    <div class="lab-control-row">
+                        <button type="button" id="btnSubmitLabMulti" class="btn-submit-lab-multi">
+                            🩺 完成生化數據判斷
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 【科幻 HUD 互動模組】醫療艙生化管線異常排查 (NG-01 鼻胃管合併症辨識) -->
+                <div id="sciFiNgHudWidget" class="scifi-ng-hud-widget hidden">
+                    <!-- 4 項科幻邊框選項按鈕 (無重複之題目與警告框，無選項旁圖案) -->
+                    <div class="scifi-options-grid" id="scifiNgOptionsGrid">
+                        <button type="button" class="scifi-opt-btn" data-key="1">
+                            <div class="choice-fill scifi-fill" id="scifi_fill_1" style="width: 0%;"></div>
+                            <span class="opt-prefix">選項 1</span>
+                            <span class="opt-label">胃食道逆流引發吸入性肺炎</span>
+                            <div class="scifi-stat-badge">
+                                <span class="choice-crown hidden" id="scifi_crown_1">👑</span>
+                                <span class="choice-pct" id="scifi_pct_1">0%</span>
+                                <span class="choice-cnt" id="scifi_cnt_1">(0票)</span>
+                            </div>
+                        </button>
+                        <button type="button" class="scifi-opt-btn" data-key="2">
+                            <div class="choice-fill scifi-fill" id="scifi_fill_2" style="width: 0%;"></div>
+                            <span class="opt-prefix">選項 2</span>
+                            <span class="opt-label">鼻黏膜損傷及出血</span>
+                            <div class="scifi-stat-badge">
+                                <span class="choice-crown hidden" id="scifi_crown_2">👑</span>
+                                <span class="choice-pct" id="scifi_pct_2">0%</span>
+                                <span class="choice-cnt" id="scifi_cnt_2">(0票)</span>
+                            </div>
+                        </button>
+                        <button type="button" class="scifi-opt-btn" data-key="3">
+                            <div class="choice-fill scifi-fill" id="scifi_fill_3" style="width: 0%;"></div>
+                            <span class="opt-prefix">選項 3</span>
+                            <span class="opt-label">胃潰瘍</span>
+                            <div class="scifi-stat-badge">
+                                <span class="choice-crown hidden" id="scifi_crown_3">👑</span>
+                                <span class="choice-pct" id="scifi_pct_3">0%</span>
+                                <span class="choice-cnt" id="scifi_cnt_3">(0票)</span>
+                            </div>
+                        </button>
+                        <button type="button" class="scifi-opt-btn" data-key="4">
+                            <div class="choice-fill scifi-fill" id="scifi_fill_4" style="width: 0%;"></div>
+                            <span class="opt-prefix">選項 4</span>
+                            <span class="opt-label">導管插入部位出現滲漏</span>
+                            <div class="scifi-stat-badge">
+                                <span class="choice-crown hidden" id="scifi_crown_4">👑</span>
+                                <span class="choice-pct" id="scifi_pct_4">0%</span>
+                                <span class="choice-cnt" id="scifi_cnt_4">(0票)</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+
+
+
+                <!-- 題目選項投票區 -->
+                <div class="rpg-choices-wrapper" id="rpgChoicesArea">
+                    <div class="choices-live-header">
+                        <span class="live-title" id="choiceHeaderPrompt">🎯 請點選您的答案 (手機即時投票)：</span>
+                        <span class="live-stat-pill" id="liveStatPill">📊 本關投票：0 票</span>
+                    </div>
+
+                    <!-- 專為拉拉條關卡 (Stage 2 & Stage 3) 設計的正誤人數統計看板 (拉條直答模式顯示) -->
+                    <div id="sliderBattleStatsBoard" class="slider-stats-board hidden">
+                        <div class="slider-stats-row">
+                            <div class="slider-stat-card stat-correct">
+                                <span class="stat-icon">🎯</span>
+                                <div class="stat-info">
+                                    <span class="stat-label">答對人數</span>
+                                    <strong class="stat-num" id="sliderStatCorrectCount">0 人</strong>
+                                </div>
+                            </div>
+                            <div class="slider-stat-card stat-wrong">
+                                <span class="stat-icon">❌</span>
+                                <div class="stat-info">
+                                    <span class="stat-label">答錯人數</span>
+                                    <strong class="stat-num" id="sliderStatWrongCount">0 人</strong>
+                                </div>
+                            </div>
+                            <div class="slider-stat-card stat-total">
+                                <span class="stat-icon">👥</span>
+                                <div class="stat-info">
+                                    <span class="stat-label">總作答數</span>
+                                    <strong class="stat-num" id="sliderStatTotalCount">0 人</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rpg-options-grid" id="optionsGrid">
+                        <!-- 選項由 JS 動態生成 -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div id="kidneyStage2IntroOverlay" class="kidney-stage2-intro-overlay hidden" role="dialog" aria-label="慢性腎臟病分期題目影片">
+            <video id="kidneyStage2IntroVideo" playsinline webkit-playsinline x5-playsinline preload="none"></video>
+            <div id="kidneyStage2IntroStatus" class="kidney-stage2-intro-status" role="status"></div>
+            <button id="kidneyStage2IntroRetry" class="kidney-stage2-intro-retry hidden" type="button">點擊播放題目影片</button>
+        </div>
+
+        <div id="kidneyStage3IntroOverlay" class="kidney-stage3-intro-overlay hidden" role="dialog" aria-label="慢性腎臟病飲食處方題目影片">
+            <video id="kidneyStage3IntroVideo" playsinline webkit-playsinline x5-playsinline preload="none"></video>
+            <div id="kidneyStage3IntroStatus" class="kidney-stage3-intro-status" role="status"></div>
+            <button id="kidneyStage3IntroRetry" class="kidney-stage3-intro-retry hidden" type="button">點擊播放題目影片</button>
+        </div>
+
+        <div id="kidneyStage4IntroOverlay" class="kidney-stage3-intro-overlay hidden" role="dialog" aria-label="末期腎臟病題目影片">
+            <video id="kidneyStage4IntroVideo" playsinline webkit-playsinline x5-playsinline preload="none"></video>
+            <div id="kidneyStage4IntroStatus" class="kidney-stage3-intro-status" role="status"></div>
+            <button id="kidneyStage4IntroRetry" class="kidney-stage3-intro-retry hidden" type="button">點擊播放題目影片</button>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- 台灣阿嬤溫暖感謝致意彈窗 (回答正確感謝儀式) -->
+        <!-- ============================================== -->
+        <div id="grandmaThankModal" class="modal-backdrop hidden">
+            <div class="grandma-thank-card">
+                <div class="grandma-avatar-wrap">
+                    <img src="assets/grandma_bow.png" alt="林阿嬤鞠躬感謝" class="grandma-bow-img">
+                </div>
+                <div class="grandma-speech-bubble">
+                    <div class="grandma-badge">
+                        <span>👵 302床 林阿嬤 深深一鞠躬</span>
+                        <button id="btnReplayGrandmaVoice" class="btn-voice-replay" title="點擊播放阿嬤語音">🔊 播放阿嬤原音</button>
+                    </div>
+                    <p class="grandma-text">
+                        <strong class="thank-highlight" style="font-size:22px;">『營養師，謝謝您！』</strong>
+                    </p>
+                </div>
+                <div class="grandma-actions-row">
+                    <button id="btnGrandmaContinue" class="btn-grandma-proceed">🏆 前往查看全班榮譽英雄榜 ➔</button>
+                    <button id="btnGrandmaBack" class="btn-grandma-back">↩️ 回到上一關</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- 勝利大結算與全班 TOP 5 英雄榜 (Leaderboard) -->
+        <!-- ============================================== -->
+        <div id="rpgVictoryModal" class="modal-backdrop hidden">
+            <div class="modal-card victory-card">
+                <canvas id="victoryConfetti" class="confetti-canvas"></canvas>
+                <div class="victory-header">
+                    <div class="trophy-icon">🏆</div>
+                    <h2 id="victoryModalTitle">【榮譽成就英雄榜】</h2>
+                    <p class="victory-sub" id="victoryModalSub">精準判讀 ‧ 速度制霸 ‧ 勇奪榮譽成就！</p>
+                </div>
+
+                <!-- 獲勝隊伍展示 -->
+                <div class="team-victory-banner hidden" id="teamVictoryBanner">
+                    <div class="team-v-crown">👑 獲勝隊伍：<span id="winningTeamName">元氣蘿蔔隊</span> (總得分 <span id="winningTeamScore">0</span> 分)</div>
+                </div>
+
+                <!-- 前 5 名英雄榜清單 -->
+                <div class="top5-list-container" id="top5ListContainer">
+                    <!-- 動態渲染 🥇 🥈 🥉 4️⃣ 5️⃣ -->
+                </div>
+
+                <!-- 下載個人成就證書卡片 -->
+                <div class="cert-download-box">
+                    <div class="cert-box-title" id="certBoxTitle">🎓 獲得「醫療之城」榮譽成就證書</div>
+                    <div class="cert-inputs">
+                        <input type="text" id="certName" placeholder="學員姓名 (已預填暱稱)">
+                        <input type="text" id="certId" placeholder="學號 / 班級 (例如: B112001)">
+                    </div>
+                    <button id="btnDownloadCert" class="btn-cert-download">📷 下載個人榮譽證書圖檔 (PNG)</button>
+                </div>
+
+                <div class="victory-actions">
+                    <div id="pendingNextQuestionNotice" class="pending-notice hidden">⏳ 本單元尚有題目進行中，請等候授課教師推進下一題...</div>
+                    <button id="btnCloseLeaderboard" class="btn-return-lobby" type="button">↩️ 關閉榮譽榜</button>
+                    <button id="btnReturnLobby" class="btn-return-lobby">🔄 再次進入等候室</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- 本題作答結算與臨床解析彈窗 (教師切換下一題時揭曉) -->
+        <!-- ============================================== -->
+        <div id="stageResultModal" class="modal-backdrop hidden">
+            <div class="modal-card result-card">
+                <div class="result-header">
+                    <span class="result-icon" id="resIcon">🎉</span>
+                    <h2 id="resTitle">【第 1 題 ‧ 作答結算揭曉】</h2>
+                </div>
+                <div class="result-body">
+                    <div class="result-status-badge" id="resBadge">恭喜答對！獲得 +250 分</div>
+                    <div class="result-score-summary" id="resScoreSummary">個人累計總積分：250 分</div>
+                    <div class="result-correct-answer" id="resAnswerInfo"><strong>正確答案：</strong>選項 3</div>
+                    <div class="result-explanation" id="resExplanation">臨床考點解析：...</div>
+                </div>
+                <div class="result-footer">
+                    <button id="btnProceedToNextQuestion" class="btn-primary-action">進入下一關 ➔ (<span id="resCountdown">3</span>s)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- 火箭隊魔性嘲笑影片彈窗 (人生好難題 答錯專屬) -->
+        <!-- ============================================== -->
+        <div id="rocketLaughModal" class="modal-backdrop hidden">
+            <div class="modal-card rocket-modal-card">
+                <div class="rocket-header">
+                    <span class="rocket-title-icon">🚀</span>
+                    <h2 id="rocketModalTitle">【人生好難題，答錯囉！】</h2>
+                </div>
+                <div class="rocket-video-wrapper">
+                    <video id="rocketLaughVideo" playsinline preload="none" width="100%">
+                        <source src="assets/voice/team_rocket_laugh.mp4" type="video/mp4">
+                        <source src="assets/voice/Team%20Rocket%20s%20Evil%20Laugh.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="rocket-caption">
+                    🤣 哈哈哈哈！遭遇火箭隊魔性大嘲笑！南台灣艷陽下狂飆趕早八，竟然答錯了！這就是人生啊！
+                </div>
+                <div class="rocket-footer">
+                    <button id="btnCloseRocketModal" class="btn-rocket-dismiss">接受嘲笑 繼續前進 ➔</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- 黑炎魔龍 答錯 GAME OVER 灰畫面彈窗 (Stage 2 專屬) -->
+        <!-- ============================================== -->
+        <div id="dragonGameOverModal" class="modal-backdrop hidden">
+            <div class="modal-card game-over-card" style="position: relative;">
+                <button type="button" id="btnCloseGameOverModal" class="btn-gameover-close-x" title="關閉視窗">✕</button>
+                <div class="game-over-header">
+                    <span class="game-over-skull">☠️</span>
+                    <h2>GAME OVER</h2>
+                    <span class="game-over-subtitle" id="gameOverSubtitle">遭到黑炎魔龍烈火吞噬！</span>
+                </div>
+                <div class="game-over-body">
+                    <div class="game-over-dragon-icon">
+                        <img src="assets/dragon_boss.png" alt="Boss" class="game-over-dragon-img" id="gameOverBossImg">
+                    </div>
+                    <div class="game-over-reason" id="gameOverReason">
+                        ⚠️ 糖化血色素蓄力數值未達標準切點，或三大指標切點選擇錯誤！
+                    </div>
+                    <div class="game-over-tip" id="gameOverTip">
+                        💡 提示：請重新確認糖化血色素診斷數值，拖曳拉拉條後，點選蓄力出擊！
+                    </div>
+                </div>
+                <div class="game-over-footer">
+                    <button id="btnDragonRevive" class="btn-revive-action">
+                        🔄 復活重新挑戰 (Revive & Challenge Again)
+                    </button>
+                    <div id="gameOverWaitingNotice" class="game-over-waiting-notice hidden">
+                        ⏳ 本題作答完畢 (未得分)
+                    </div>
+                    <button type="button" id="btnCloseGameOverModalBottom" class="btn-gameover-close-btn">
+                        ✕ 關閉視窗
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 重症加護病房 ‧ 鼻胃管吸入性肺炎致命停搏黑白警戒層 (單元二第 2 題) -->
+        <div id="fatalAspirationOverlay" class="fatal-aspiration-overlay hidden">
+            <div class="flatline-alert-box">
+                <div class="flatline-header-badge">⚠️ 致命醫療事故警報 ‧ 心電圖停搏 (ASYSTOLE)</div>
+                <div class="flatline-ecg-track">
+                    <span class="flatline-wave">————————————————————</span>
+                    <span class="flatline-bpm">心率: 0 BPM</span>
+                </div>
+                <div class="flatline-desc">
+                    <strong>【重度吸入性肺炎 ‧ 急性呼吸衰竭致死】</strong><br>
+                    重症病患因處置不當引發大量胃內容物誤吸（Aspiration），肺泡嚴重浸潤塌陷，搶救無效死亡！<br>
+                    <span class="flatline-tip">💡 臨床黃金指引：常規檢查胃殘餘量 (GRV) 並未改善吸入風險，反致延誤灌食！應落實床頭抬高 30~45° 與口腔清潔！</span>
+                </div>
+                <div style="margin-top: 14px; text-align: center;">
+                    <button type="button" id="btnCloseFatalOverlay" class="btn-close-fatal" style="background:#dc2626;color:#fff;border:1px solid #f87171;padding:8px 24px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;box-shadow:0 0 10px rgba(220,38,38,0.5);">✕ 關閉警報</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- 國王的營養任務 ‧ 答錯遭國王斥責「退下！」任務失敗彈窗 (單元一第 7 題) -->
+        <!-- ============================================== -->
+        <div id="kingDismissModal" class="modal-backdrop hidden">
+            <div class="modal-card king-dismiss-card">
+                <div class="king-dismiss-header">
+                    <span class="king-crown-icon">⛓️</span>
+                    <h2>【考核未過 ‧ 食醫被押入天牢！】</h2>
+                </div>
+                <div class="king-dismiss-body">
+                    <div class="jail-scene-wrap">
+                        <img src="assets/rpg_bg_zhou_jail.jpg" alt="食醫被關入天牢" class="jail-scene-img">
+                        <div class="king-dismiss-shout">「打入天牢！」</div>
+                    </div>
+                    <div class="king-dialogue-quote">
+                        「荒謬！連初步『營養篩檢』的項目都無法辨識，如何擔當大周首席食醫之重任？！來人啊，將此人押入天牢反省！」
+                    </div>
+                    <div class="king-hint-box">
+                        💡 <strong>周王的王室聖旨：</strong>『營養篩檢（Nutrition Screening）』目的是快速辨識有營養不良風險的居民，標準項目包括：<strong>體重改變、BMI、進食量</strong>；而『藥物』為後續深入營養評估之項目，並非初步快速篩檢之常規項目！
+                    </div>
+                </div>
+                <div class="king-dismiss-footer">
+                    <button type="button" class="btn-king-modal-close" onclick="window.closeKingDismissModal()">✕ 關閉視窗</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 簡易臨床計算機彈窗 -->
+        <div id="calcModal" class="modal-backdrop hidden">
+            <div class="modal-card calc-card">
+                <div class="modal-header">
+                    <h3>🧮 臨床床邊計算輔助工具</h3>
+                    <button id="btnCloseCalc" class="modal-close">&times;</button>
+                </div>
+                <div class="calc-body">
+                    <div class="calc-formula-block">
+                        <div class="calc-f-title">【1. BMI 計算機】(kg / m²)</div>
+                        <div class="calc-inputs-row">
+                            <label>體重(kg): <input type="number" id="calcW" value="46" step="0.1"></label>
+                            <label>身高(cm): <input type="number" id="calcH" value="155" step="0.1"></label>
+                            <button id="btnDoCalcBmi" class="btn-calc-action">計算</button>
+                        </div>
+                        <div class="calc-res">計算結果 BMI：<strong id="resBmi">--</strong> kg/m²</div>
+                    </div>
+                    <div class="calc-formula-block">
+                        <div class="calc-f-title">【2. 體重流失率計算機】((常態 - 現重) / 常態)</div>
+                        <div class="calc-inputs-row">
+                            <label>6個月前體重(kg): <input type="number" id="calcUsual" value="58" step="0.1"></label>
+                            <label>現重(kg): <input type="number" id="calcCurr" value="46" step="0.1"></label>
+                            <button id="btnDoCalcLoss" class="btn-calc-action">計算</button>
+                        </div>
+                        <div class="calc-res">流失百分比：<strong id="resLoss">--</strong> %</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- 結束 #rpg-app -->
+
+    <!-- 教師主控懸浮切換鈕 (僅在教師端顯示) -->
+    <button id="teacherToggleBtn" class="teacher-toggle-btn" title="切換教師主控台">🎛️ 教師遙控器</button>
+
+    <!-- 教師專屬主控遙控器 -->
+    <div id="teacherControlBar" class="teacher-control-bar active">
+        <div class="tc-header">
+            <span class="tc-title">🎛️ 課堂教學 ‧ 教師即時主控遙控器</span>
+            <button id="btnCloseTeacherBar" class="tc-close-btn" title="收合遙控器">✕ 收合</button>
+        </div>
+        <div class="tc-body">
+            <div class="tc-actions-row">
+                <button id="tcBtnStartGame" class="tc-btn-primary">🚀 啟動作答</button>
+                <button id="tcBtnPrev" class="tc-btn-secondary">⏮️ 上一題</button>
+                <button id="tcBtnNext" class="tc-btn-secondary">⏭️ 下一題</button>
+                <button id="tcBtnReveal" class="tc-btn-gold">📢 公布解答與統計</button>
+                <button id="tcBtnShowLeaderboard" class="tc-btn-accent">🏆 全班英雄榜</button>
+                <button id="tcBtnReset" class="tc-btn-danger">🔄 重設競賽</button>
+            </div>
+        </div>
+    </div>
+
+<script src="js/app.js?v=20261116-forest-dialog-wrap"></script>
+</body>
+</html>
