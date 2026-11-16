@@ -2386,6 +2386,7 @@
         const tLbl = document.querySelector('.t-lbl');
         const lobbyFooter = document.getElementById('lobbyFooterNote');
 
+        document.documentElement.classList.remove('trial-route');
         document.body.classList.remove(
             'unit-ncp', 'unit-dm', 'unit-life', 'unit-support',
             'unit-new_student_trial', 'unit-f47185', 'unit-trial',
@@ -2393,6 +2394,9 @@
             'medical-city-active', 'continent-guide-dismissed', 'gameover-grayscale-active',
             'sports-stage-active', 'sports-quiz-step'
         );
+        if (activeUnit === 'must') {
+            document.body.classList.add('unit-must');
+        }
         if (stageBackdrop) {
             stageBackdrop.classList.remove(
                 'ncp-theme', 'dm-theme', 'classroom-theme', 'scifi-theme',
@@ -2421,7 +2425,20 @@
             mentorWrapperInit.style.removeProperty('display');
         }
         const trialStartAreaInit = document.getElementById('trialBgStartArea');
-        if (trialStartAreaInit) trialStartAreaInit.classList.add('hidden');
+        if (trialStartAreaInit) {
+            trialStartAreaInit.classList.add('hidden');
+            trialStartAreaInit.style.setProperty('display', 'none', 'important');
+        }
+        const dragonArenaInit = document.getElementById('dragonBossArena');
+        if (dragonArenaInit && activeUnit !== 'dm') {
+            dragonArenaInit.classList.add('hidden');
+            dragonArenaInit.style.setProperty('display', 'none', 'important');
+        }
+        const a1cWidgetInit = document.getElementById('a1cLiftingWidget');
+        if (a1cWidgetInit && activeUnit !== 'dm') {
+            a1cWidgetInit.classList.add('hidden');
+            a1cWidgetInit.style.setProperty('display', 'none', 'important');
+        }
         const continentMapElInit = document.getElementById('healthContinentMap');
         if (continentMapElInit) continentMapElInit.classList.add('hidden');
         if (patientBanner) {
@@ -3304,13 +3321,9 @@
                     sceneLobby.classList.add('hidden');
                     rpgMainStage.classList.remove('hidden');
                     const targetStage = Number(data.currentStage) || parseInt(urlParams.get('stage')) || currentStage || 1;
-                    if (activeUnit === 'must' && targetStage === 1 && currentUnitConf.prologue && currentUnitConf.prologue.length > 0) {
-                        startPrologueDialogue();
-                    } else {
-                        loadStage(targetStage);
-                        startPolling();
-                        startTimer();
-                    }
+                    loadStage(targetStage);
+                    startPolling();
+                    startTimer();
                 }
             })
             .catch(() => {
@@ -11004,7 +11017,10 @@
         const arcaneWidget = document.getElementById('arcaneEagWidget');
         if (labWidget) labWidget.classList.add('hidden');
         const trialBgStartArea = document.getElementById('trialBgStartArea');
-        if (trialBgStartArea) trialBgStartArea.classList.add('hidden');
+        if (trialBgStartArea) {
+            trialBgStartArea.classList.add('hidden');
+            trialBgStartArea.style.setProperty('display', 'none', 'important');
+        }
         const characterStageEl = document.getElementById('characterStage');
         const teacherImg = document.getElementById('charTeacherImg') || document.querySelector('#charNurse img');
         const nurseTag = document.getElementById('charTeacherName') || document.querySelector('#charNurse .char-nametag');
@@ -11013,11 +11029,19 @@
         const fyuSub = document.querySelector('.fyu-sub');
 
         const stageBackdropEl = document.getElementById('stageBackdrop');
-        if (dragonBossArena) dragonBossArena.classList.add('hidden');
-        if (a1cLiftingWidget) a1cLiftingWidget.classList.add('hidden');
-        const continentMapEl = document.getElementById('healthContinentMap');
-        if (continentMapEl) continentMapEl.classList.add('hidden');
-        document.body.classList.remove('health-continent-active', 'sports-stage-active', 'sports-quiz-step');
+        document.documentElement.classList.remove('trial-route');
+        document.body.classList.remove('trial-step-0', 'trial-dialog-step', 'unit-new_student_trial', 'health-continent-active', 'sports-stage-active', 'sports-quiz-step');
+        if (activeUnit === 'must') {
+            document.body.classList.add('unit-must');
+        }
+        if (dragonBossArena && activeUnit !== 'dm') {
+            dragonBossArena.classList.add('hidden');
+            dragonBossArena.style.setProperty('display', 'none', 'important');
+        }
+        if (a1cLiftingWidget && activeUnit !== 'dm') {
+            a1cLiftingWidget.classList.add('hidden');
+            a1cLiftingWidget.style.setProperty('display', 'none', 'important');
+        }
         const sportsQuizAreaEl = document.getElementById('sportsQuizArea');
         if (sportsQuizAreaEl) {
             sportsQuizAreaEl.classList.add('hidden');
@@ -13339,11 +13363,7 @@ data: data
         if (!isTeacher && Number.isInteger(serverStage) && serverStage > 0 &&
             (serverStage !== currentStage || renderedStage !== serverStage || renderedUnit !== activeUnit)) {
             if (serverStage <= maxSt) {
-                if (activeUnit === 'must' && serverStage === 1 && currentUnitConf.prologue && currentUnitConf.prologue.length > 0) {
-                    startPrologueDialogue();
-                } else {
-                    loadStage(serverStage);
-                }
+                loadStage(serverStage);
             } else {
                 currentStage = serverStage;
                 renderedStage = serverStage;

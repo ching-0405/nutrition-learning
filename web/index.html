@@ -13,7 +13,7 @@
         (function() {
             document.documentElement.classList.add('app-initializing');
             var p = new URLSearchParams(window.location.search);
-            var unit = (p.get('unit') || 'new_student_trial').toLowerCase().replace(/^unit_/, '');
+            var unit = (p.get('unit') || 'must').toLowerCase().replace(/^unit_/, '');
             var isTrial = (unit === 'new_student_trial' || unit === 'f47185' || unit === 'trial' || unit === 'health_continent');
             var isT = (p.get('role') === 'teacher' || p.get('teacher') === '1' || (!isTrial && (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && p.get('role') !== 'student'));
             if (isT) {
@@ -23,9 +23,10 @@
             if (isInApp) {
                 document.documentElement.className += ' is-in-app';
             }
-            var unit = (p.get('unit') || 'new_student_trial').toLowerCase().replace(/^unit_/, '');
-            if (unit === 'new_student_trial' || unit === 'f47185' || unit === 'trial') {
+            if (isTrial) {
                 document.documentElement.className += ' trial-route';
+            } else {
+                document.documentElement.classList.remove('trial-route');
             }
         })();
     </script>
@@ -193,6 +194,19 @@
             width: auto !important;
             margin: 0 !important;
             z-index: 200 !important;
+        }
+        /* 非 trial 單元或 MUST 單元絕對強制隱藏開始遊戲按鈕與魔龍戰鬥場地 */
+        body:not(.trial-step-0) #trialBgStartArea,
+        body.unit-must #trialBgStartArea,
+        html:not(.trial-route) #trialBgStartArea {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+        body.unit-must #dragonBossArena,
+        body:not(.unit-dm) #dragonBossArena {
+            display: none !important;
         }
         /* 登入畫面字體與黃框完美貼合配置 (一頁完整顯示不超出黃色外框) */
         .login-scene {
@@ -521,7 +535,7 @@
         })();
     </script>
 </head>
-<body class="unit-new_student_trial trial-step-0">
+<body class="unit-must">
     <audio id="rpgBgmAudio" src="assets/new_student_trial_bgm.mp3" loop autoplay playsinline preload="auto"></audio>
     <audio id="grandmaVoiceAudio" src="assets/grandma_taigi_voice.mp3?v=2" preload="none"></audio>
     <audio id="npcQuestionVoiceAudio" preload="none"></audio>
@@ -753,7 +767,7 @@
                 </div>
 
                 <!-- 新生勇者試煉初始畫面的直接開始按鈕 -->
-                <div id="trialBgStartArea" class="trial-bg-start-area">
+                <div id="trialBgStartArea" class="trial-bg-start-area hidden" style="display: none !important;">
                     <button type="button" id="btnTrialStartDirect" class="btn-trial-start-direct">
                         <span class="btn-trial-icon">⚔️</span>
                         <span class="btn-trial-text">開始遊戲</span>
@@ -865,7 +879,7 @@
                 </div>
 
                 <!-- 魔龍 Boss 戰鬥舞台 (單元三 Stage 2~5 專屬：勇者戰士 vs 魔龍/巨獸) -->
-                <div class="dragon-boss-arena hidden" id="dragonBossArena">
+                <div class="dragon-boss-arena hidden" id="dragonBossArena" style="display: none !important;">
                         <!-- 戰士勇者 vs 黑炎魔龍 對戰舞台 -->
                         <div class="battle-duo-container" id="battleDuoContainer">
                             <!-- 左側：糖化檢定勇者戰士 -->
