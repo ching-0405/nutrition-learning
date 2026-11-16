@@ -2739,6 +2739,7 @@ body:not(.is-teacher) .stage-proceed-row {
     position: relative;
     cursor: pointer;
     transition: transform 0.15s ease;
+    margin-bottom: 8px;
 }
 
 .rpg-dialog-box:active {
@@ -2746,14 +2747,14 @@ body:not(.is-teacher) .stage-proceed-row {
 }
 
 .dialog-box-border {
-    padding: 16px 14px 8px 14px;
+    padding: 24px 16px 10px 16px;
     position: relative;
     overflow: visible;
 }
 
 .dialog-header-bar {
     position: absolute;
-    top: -16px;
+    top: -18px;
     left: 12px;
     right: 12px;
     box-sizing: border-box;
@@ -2809,9 +2810,9 @@ body:not(.is-teacher) .stage-proceed-row {
 
 @media (max-width: 600px) {
     .dialog-header-bar {
-        left: 6px;
-        right: 6px;
-        width: calc(100% - 12px);
+        left: 8px;
+        right: 8px;
+        width: calc(100% - 16px);
         top: -15px;
     }
     .speaker-name-badge {
@@ -2826,18 +2827,29 @@ body:not(.is-teacher) .stage-proceed-row {
         flex-shrink: 0;
     }
     .dialog-box-border {
-        padding-top: 18px !important;
+        padding-top: 24px !important;
         padding-bottom: 8px !important;
     }
 }
 
 @media (min-width: 768px) {
+    .dialog-header-bar {
+        top: -19px;
+        left: 14px;
+        right: 14px;
+        width: calc(100% - 28px);
+    }
     .speaker-name-badge {
         font-size: calc(18px * var(--font-scale, 1)) !important;
         padding: 4px 14px;
     }
+    .dialog-box-border {
+        padding-top: 28px !important;
+        padding-bottom: 12px !important;
+    }
     .dialog-text-body {
         font-size: calc(17.5px * var(--font-scale, 1)) !important;
+        margin-top: 8px !important;
     }
 }
 
