@@ -11327,7 +11327,22 @@
 
         const tLbl = document.querySelector('.t-lbl');
         if (activeUnit === 'must') {
+            if (stageBackdrop) {
+                stageBackdrop.classList.remove('ncp-theme', 'zhou-court-theme', 'ward-theme');
+                stageBackdrop.style.removeProperty('aspect-ratio');
+            }
             if (Number(stageNum) === 7) {
+                if (stageBackdrop) {
+                    stageBackdrop.className = 'stage-backdrop zhou-court-theme';
+                    stageBackdrop.style.setProperty('background-image', "url('assets/rpg_bg_zhou_court.jpg')", 'important');
+                    stageBackdrop.style.setProperty('background-size', 'cover', 'important');
+                    stageBackdrop.style.setProperty('background-position', 'center center', 'important');
+                }
+                if (teacherImg) {
+                    teacherImg.src = 'assets/zhou_emperor_full.png';
+                    teacherImg.alt = '周天子';
+                }
+                if (nurseTag) nurseTag.textContent = '周天子';
                 if (fyuIcon) {
                     fyuIcon.textContent = '📜';
                     fyuIcon.style.background = '#ca8a04';
@@ -11347,6 +11362,17 @@
                     `;
                 }
             } else if (Number(stageNum) === 5 || Number(stageNum) === 6) {
+                if (stageBackdrop) {
+                    stageBackdrop.className = 'stage-backdrop ncp-theme';
+                    stageBackdrop.style.setProperty('background-image', "url('assets/rpg_bg_seminar.jpg')", 'important');
+                    stageBackdrop.style.setProperty('background-size', 'cover', 'important');
+                    stageBackdrop.style.setProperty('background-position', 'center 30%', 'important');
+                }
+                if (teacherImg) {
+                    teacherImg.src = 'assets/director_lu_bust.png';
+                    teacherImg.alt = '臨床營養總監 陸馳野';
+                }
+                if (nurseTag) nurseTag.textContent = '臨床營養總監 陸馳野';
                 if (fyuIcon) {
                     fyuIcon.textContent = '✚';
                     fyuIcon.style.background = '';
@@ -11365,6 +11391,17 @@
                     `;
                 }
             } else {
+                if (stageBackdrop) {
+                    stageBackdrop.className = 'stage-backdrop ward-theme';
+                    stageBackdrop.style.setProperty('background-image', "url('assets/rpg_bg_ward.jpg')", 'important');
+                    stageBackdrop.style.setProperty('background-size', 'cover', 'important');
+                    stageBackdrop.style.setProperty('background-position', 'center 30%', 'important');
+                }
+                if (teacherImg) {
+                    teacherImg.src = 'assets/nurse_bust.png';
+                    teacherImg.alt = '護理師 林語柔';
+                }
+                if (nurseTag) nurseTag.textContent = '護理師 林語柔';
                 if (fyuIcon) {
                     fyuIcon.textContent = '✚';
                     fyuIcon.style.background = '';
@@ -12023,6 +12060,16 @@
                                 stageBackdrop.className = 'stage-backdrop dm-swamp-theme';
                             } else if (modCode === 'DM_STAGE_5') {
                                 stageBackdrop.className = 'stage-backdrop dm-thunder-theme';
+                            } else if (modCode.startsWith('MUST_CASE_') || modCode.startsWith('MUST_STAGE_')) {
+                                if (modCode === 'MUST_STAGE_7' || Number(stageNum) === 7) {
+                                    stageBackdrop.className = 'stage-backdrop zhou-court-theme';
+                                    stageBackdrop.style.setProperty('background-image', "url('assets/rpg_bg_zhou_court.jpg')", 'important');
+                                } else {
+                                    stageBackdrop.className = 'stage-backdrop ward-theme';
+                                    stageBackdrop.style.setProperty('background-image', "url('assets/rpg_bg_ward.jpg')", 'important');
+                                    stageBackdrop.style.setProperty('background-size', 'cover', 'important');
+                                    stageBackdrop.style.setProperty('background-position', 'center 30%', 'important');
+                                }
                             } else if (modCode.startsWith('NCP_')) {
                                 stageBackdrop.className = 'stage-backdrop ncp-theme';
                                 if (fyuTitle) fyuTitle.textContent = '輔英科技大學附設醫院 臨床營養研討室';
