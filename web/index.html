@@ -402,28 +402,9 @@
             if (event) {
                 event.preventDefault();
             }
-            var login = document.getElementById('sceneLogin');
-            var lobby = document.getElementById('sceneLobby');
-            var main = document.getElementById('rpgMainStage');
-            var inputNickname = document.getElementById('inputNickname');
-            var myNick = (inputNickname && inputNickname.value ? inputNickname.value.trim() : '') || '營養小達人';
-
-            document.documentElement.classList.remove('trial-route');
-            document.body.classList.remove('trial-step-0');
-            document.body.classList.add('trial-dialog-step', 'unit-new_student_trial');
-
-            if (login) login.classList.add('hidden');
-            if (lobby) lobby.classList.add('hidden');
-            if (main) main.classList.remove('hidden');
-
-            try {
-                localStorage.setItem('FYU_STUDENT_NICKNAME', myNick);
-            } catch(e) {}
-
-            if (typeof window.showNewStudentTrialStep === 'function') {
-                window.showNewStudentTrialStep(1);
-            } else if (typeof window.__fyuStartTrialDialog === 'function') {
-                window.__fyuStartTrialDialog();
+            var btnJoinLobby = document.getElementById('btnJoinLobby');
+            if (btnJoinLobby) {
+                btnJoinLobby.click();
             }
             return false;
         };
@@ -581,13 +562,19 @@
         <!-- ============================================== -->
         <section id="sceneLogin" class="rpg-scene login-scene hidden">
             <div class="login-card">
-                <img src="assets/fyu_nutrition_header_logo.png?v=20261023-logo-v1" alt="輔英科技大學 保健營養系暨碩士班" class="game-logo-badge fyu-banner-logo">
-                <h2>解鎖專業營養師勳章</h2>
-                <p class="login-desc">歡迎來到健康大陸！請輸入勇者暱稱，準備展開營養試煉：</p>
+                <div class="login-header-branding" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 12px; background: rgba(255, 255, 255, 0.95); padding: 8px 16px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                    <img src="assets/fyu_school_logo.png?v=20261025-logo-v2" alt="輔英科技大學校徽" style="width: 38px; height: 38px; object-fit: contain; border-radius: 50%;">
+                    <div style="text-align: left; line-height: 1.25;">
+                        <div style="font-size: 14px; font-weight: 800; color: #0f172a; letter-spacing: 0.5px;">輔英科技大學</div>
+                        <div style="font-size: 12px; font-weight: 700; color: #0284c7;">保健營養系 ‧ 營養教學平台</div>
+                    </div>
+                </div>
+                <h2>【單元一 營養照顧流程】</h2>
+                <p class="login-desc">歡迎進入 302 床林奶奶臨床病房！請輸入您的姓名或暱稱以加入本堂課堂競賽：</p>
 
                 <div class="login-input-group">
-                    <label for="inputNickname">👤 遊戲暱稱：</label>
-                    <input type="text" id="inputNickname" placeholder="請輸入暱稱 (例如: 健管小達人 / 王小明)" maxlength="12">
+                    <label for="inputNickname">👤 學生姓名 / 暱稱：</label>
+                    <input type="text" id="inputNickname" placeholder="請輸入姓名或暱稱 (例如: 王小明 / 健管實習生)" maxlength="12">
                 </div>
 
                 <div class="gender-select-group">
@@ -617,7 +604,7 @@
                     <div id="avatarPhotoPreview" class="avatar-photo-preview hidden" aria-live="polite"></div>
                 </div>
 
-                <button id="btnJoinLobby" type="button" class="btn-join-game" onclick="return window.__fyuStartTrialLogin(event);" disabled>⚔️ 開始試煉 ‧ 踏上冒險 ➜</button>
+                <button id="btnJoinLobby" type="button" class="btn-join-game" disabled>進入課堂等候室 ➜</button>
             </div>
         </section>
 

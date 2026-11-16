@@ -2613,7 +2613,8 @@
             if (activeUnit === 'new_student_trial' || isNewStudentTrialUnit(activeUnit)) {
                 loginH2.textContent = '解鎖專業營養師勳章';
             } else {
-                loginH2.textContent = `【${activeUnitTitle}】`;
+                const cleanTitle = (activeUnitTitle || '').trim().replace(/^【+/, '').replace(/】+$/, '');
+                loginH2.textContent = cleanTitle ? `【${cleanTitle}】` : '【臨床營養教學評估】';
             }
         }
         if (loginP) {
